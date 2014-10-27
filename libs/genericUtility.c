@@ -66,6 +66,79 @@ salarm (unsigned int seconds)
 }
 
 
+struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
+	struct msghdr msg;
+	
+	memset(&msg, 0, sizeof(msg));
+	if(data == NULL) {
+		struct iovec iov1[1];
+		printf("message iov length is 1 \n");
+		iov1[0].iov_base = messageHeader;
+		iov1[0].iov_len = sizeof(*messageHeader);
+		msg.msg_iov = iov1;
+		msg.msg_iovlen = 1;
+	}
+	else {
+		struct iovec iov2[2];
+		iov2[0].iov_base = messageHeader;
+		iov2[0].iov_len = sizeof(*messageHeader);
+		iov2[1].iov_base = data;
+		iov2[1].iov_len = 512;
+		msg.msg_iov = iov2;
+		msg.msg_iovlen = 2;	
+	}
+	
+	if(msg_name == NULL) {
+		 msg.msg_name = NULL;
+		 msg.msg_namelen = 0;
+	}
+	else {
+		 SA* saddress = (SA*)msg_name;
+		 msg.msg_name = saddress;
+		 msg.msg_namelen = sizeof(SA);
+	}
+	
+	return msg;
+}
+
+
+
+
+int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
+	struct msghdr msg;
+	
+	memset(&msg, 0, sizeof(msg));
+	if(data == NULL) {
+		struct iovec iov1[1];
+		printf("message iov length is 1 \n");
+		iov1[0].iov_base = messageHeader;
+		iov1[0].iov_len = sizeof(*messageHeader);
+		msg.msg_iov = iov1;
+		msg.msg_iovlen = 1;
+	}
+	else {
+		struct iovec iov2[2];
+		iov2[0].iov_base = messageHeader;
+		iov2[0].iov_len = sizeof(*messageHeader);
+		iov2[1].iov_base = data;
+		iov2[1].iov_len = 512;
+		msg.msg_iov = iov2;
+		msg.msg_iovlen = 2;	
+	}
+	
+	if(msg_name == NULL) {
+		 msg.msg_name = NULL;
+		 msg.msg_namelen = 0;
+	}
+	else {
+		 SA* saddress = (SA*)msg_name;
+		 msg.msg_name = saddress;
+		 msg.msg_namelen = sizeof(SA);
+	}
+	
+	return sendmsg(sockfd,&msg, 0);
+}
+
 
 
 
