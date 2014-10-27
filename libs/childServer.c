@@ -19,6 +19,7 @@ static void sig_alarm(int signo) {
 }
 
 int establishSecondHandshake(clientInformation currentClientInformation) {
+	 hdr recvHeader;
 	 int returnValue=0;
 	 char port[512];
 	 socklen_t len=INET_ADDRSTRLEN;
@@ -32,7 +33,6 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 	 hdr initialHeader = build_header(currentSequenceNumber, currentAckNumber,1,0,currentClientInformation.serverWindowSize,0);
 	 snprintf(port, 10,"%d",ntohs(sockaddr.sin_port));
 	 struct sockaddr_in clientAddress = getClientSocketDetails(currentClientInformation);
-	 recvMsg = buildMessage(NULL,&revcHeader,NULL );
 	 Signal(SIGALRM, sig_alarm); 
 	 sendagain :
 	 	returnValue = sendMessage(newSockfd,&clientAddress,  &initialHeader,  port);
@@ -66,7 +66,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 		}
 		
 		do {
-			returnValue = recvmsg(newSockfd,&recvMsg, 0);
+			returnValue = recvMessage(newSockfd, NULL,&recvHeader,NULL);
 		}while(returnValue < 0);
 		
 		if(returnValue <0) {
@@ -78,10 +78,9 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 			printf("failure while recieving first ACK : Timed Out /n");
 			exit(2);
 		}
-		currentClientSeqNumber = revcHeader.seq;
+		currentClientSeqNumber = ntohs(recvHeader.seq);
 		currentSequenceNumber++;
 		salarm(0);
-	
 		close(currentClientInformation.currentSocketDiscriptor);
 		return newSockfd;
 }

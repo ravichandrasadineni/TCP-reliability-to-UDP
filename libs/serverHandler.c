@@ -1,12 +1,9 @@
 #include "serverHandler.h"
-
 static sigjmp_buf jmpbuf;
 struct itimerval timer;
 int serverCurrentSeqNumber = 0;
 int clientcurrentSeqNumber =0;
 int serverseqNumber =0;
-
-
 static void sig_alarm(int signo) {
 	siglongjmp(jmpbuf,1);
 
@@ -17,36 +14,15 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	int currentRetransmissions =0,time=0;
 	printf("the current sequence number is %d \n",clientcurrentSeqNumber);
 	hdr initialHeader = build_header(clientcurrentSeqNumber, 0,1,0,sliWindowsize,0);
-	hdr revcHeader;
+	hdr recvHeader;
 	int returnValue=0;
 	int newPortNumber;
 	char port[512];
-	struct msghdr sendMsg, recvMsg;
-	memset(&sendMsg, 0, sizeof(sendMsg));
-	memset(&recvMsg, 0, sizeof(recvMsg)); 
-	struct iovec iovsend[2], iovRecv[2];
-	sendMsg.msg_name = NULL;
-	sendMsg.msg_namelen = 0;
-	sendMsg.msg_iov = iovsend;
-	sendMsg.msg_iovlen = 2;
-	iovsend[0].iov_base = &initialHeader;
-	iovsend[0].iov_len = sizeof(initialHeader);
-	iovsend[1].iov_base = filename;
-	iovsend[1].iov_len = 512;
-	recvMsg.msg_name = NULL;
-	recvMsg.msg_namelen = 0;
-	recvMsg.msg_iov =iovRecv;
-	recvMsg.msg_iovlen = 2;
-	iovRecv[0].iov_base = &revcHeader;
-	iovRecv[0].iov_len = sizeof(revcHeader);
-	iovRecv[1].iov_base = port;
-	iovRecv[1].iov_len = 512;
-	
 	Signal(SIGALRM, sig_alarm);
 
   sendagain :
 	
-	 returnValue = sendmsg(sockfd,&sendMsg, 0);
+	 returnValue = sendMessage(sockfd,NULL,&initialHeader, filename);
 	if(returnValue < 0 ) {	
 		perror("failure while sending first SYN :");
 		exit(2);
@@ -54,9 +30,7 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	if(salarm(INITIAL_TIME_OUT)>0) {
 		printf("timer already set somewhere \n");
 		exit(2);
-	}
-
-	
+	}	
 	if (sigsetjmp(jmpbuf,1)!=0) {
 		if(currentRetransmissions >=NUMBER_OF_RETRANSMITS) {
 			printf("Tried sending Syn for 12 times but failed\n");
@@ -68,7 +42,7 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 		}
 	}	
 	do {
-		returnValue = recvmsg(sockfd,&recvMsg, 0);
+		returnValue = recvMessage(sockfd,NULL, &recvHeader, port);
 	}while((returnValue <0));
 	
 	if(returnValue < 0 ) {
@@ -80,52 +54,26 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	int newPort = atoi(port);
 	printf("the port number of new client socket is %d \n",newPort);	
 	close(sockfd);
-	
 	sockfd = getClientBindingSocket(&ipAddress,newPort,clientSocketInfo);
-	
-	
-	return sockfd;
-	
+	return sockfd;	
 }
 
 
 int handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo) {
-	hdr initialHeader,revcHeader;
+	hdr initialHeader,recvHeader;
 	int returnValue =0;
 	char stringMessage[512];
 	memset(stringMessage,0,512);
 	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo);	
 	printf("establishHandshake called for the first time \n");
-	struct msghdr sendMsg, recvMsg;
-	memset(&sendMsg, 0, sizeof(sendMsg));
-	memset(&recvMsg, 0, sizeof(recvMsg)); 
-	struct iovec iovsend[1], iovRecv[2];
-	sendMsg.msg_name = NULL;
-	sendMsg.msg_namelen = 0;
-	sendMsg.msg_iov = iovsend;
-	sendMsg.msg_iovlen = 1;
-	iovsend[0].iov_base = &initialHeader;
-	iovsend[0].iov_len = sizeof(initialHeader);
-	recvMsg.msg_name = NULL;
-	recvMsg.msg_namelen = 0;
-	recvMsg.msg_iov =iovRecv;
-	recvMsg.msg_iovlen = 2;
-	iovRecv[0].iov_base = &revcHeader;
-	iovRecv[0].iov_len = sizeof(revcHeader);
-	iovRecv[1].iov_base = stringMessage;
-	iovRecv[1].iov_len = 512;
-	
 	while(1) {
 		initialHeader  = build_header(clientcurrentSeqNumber,serverseqNumber+1,1,0,sliWindowsize,0);
-		serverseqNumber++;
-		iovsend[0].iov_base = &initialHeader;
-		iovsend[0].iov_len = sizeof(initialHeader);
-		sendmsg(sockfd,&sendMsg, 0);
-		returnValue = recvmsg(sockfd,&recvMsg, 0);
+		returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
+		serverseqNumber++;	
+		returnValue = recvMessage(sockfd,NULL, &recvHeader, stringMessage);
 		printf("\n%s\n",stringMessage);
 		
-	}
-	
+	}	
 }
 		
 	
