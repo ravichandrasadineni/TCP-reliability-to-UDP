@@ -2,15 +2,13 @@
 int clientsInfoLength = 0;
 clientInfo clientsInformation[100];
 
-void populateInputParams(sockinfo currentSocketInfo, struct msghdr recvMsg, int sliWindowSize, char* argv[7]);
+void populateInputParams(sockinfo currentSocketInfo, struct sockaddr_in *cliAddr, hdr* header, char* filename, int sliWindowSize, char* argv[9]);
 void handleClient(sockinfo* serverSocketsInfo,int size, SA clientAddress, sockinfo currentServerInfo, char* recvbuffer );
 
-int isDuplicateClient(SA currentClientAddress) {
+int isDuplicateClient(struct sockaddr_in cliAddr) {
 	int i;
 	char clientAddressString[INET_ADDRSTRLEN];
 	// USE cliAddr for client Not currentClientAddress
-	struct sockaddr_in cliAddr;
-	cliAddr = *(struct sockaddr_in*)&currentClientAddress;
 	for( i =0; i < clientsInfoLength; i++ ) {
 		if(clientsInformation[i].ipAddress.s_addr == cliAddr.sin_addr.s_addr) {		
 			if(clientsInformation[i].port ==cliAddr.sin_port) {
@@ -31,16 +29,12 @@ void closeOtherSockets(int sockfd,sockinfo* serverSocketsInfo, int size) {
 	} 
 }
 
-
-
-void updateClientInformation(SA currentClientAddress, int pid) {
+void updateClientInformation(struct sockaddr_in cliAddr, int pid) {
 	// USE cliAddr for client Not currentClientAddress
 	sigset_t sigsetChild;
 	Sigemptyset(&sigsetChild);
 	Sigaddset(&sigsetChild, SIGCHLD);
 	Sigprocmask(SIG_BLOCK, &sigsetChild, NULL);
-	struct sockaddr_in cliAddr;
-	cliAddr = *(struct sockaddr_in*)&currentClientAddress;	
 	clientInfo newClientInfo;
 	newClientInfo.ipAddress.s_addr = cliAddr.sin_addr.s_addr;
 
@@ -75,30 +69,12 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
 	int maxfd=0;
 	int recvCount;
 	int pid;
+	hdr header;
     char* recvBuffer;
     char filename[512];
-    
     FD_ZERO(&rset);
-    socklen_t clientAddressLength = INET_ADDRSTRLEN;
-    SA clientAddress;
-    bzero(&clientAddress, sizeof(clientAddress));
-    signal(SIGCHLD, clearClientInformation);
-    struct msghdr recvMsg;
-	memset(&recvMsg,0,sizeof(recvMsg));
-	hdr header;
-	memset(&header,0,sizeof(header));
-	struct iovec iovRecv[2];
-	memset(&iovRecv,0,sizeof(iovRecv));
-
-	recvMsg.msg_name=&clientAddress;
-	recvMsg.msg_namelen=clientAddressLength;
-	recvMsg.msg_iov=iovRecv;
-	recvMsg.msg_iovlen=2;
-	iovRecv[0].iov_base=&header;
-	iovRecv[0].iov_len=sizeof(header);
-	iovRecv[1].iov_base=filename;
-	iovRecv[1].iov_len=512;
-	
+    struct sockaddr_in clientAddress;
+    signal(SIGCHLD, clearClientInformation);	
 	while(1) {
 		int i;
 		
@@ -118,7 +94,7 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
    		int j;
        	for(j=0; j<size; j++) {
        		if(FD_ISSET(serverSocketsInfo[j].sockfd,&rset)) {
-       			recvCount=recvmsg(serverSocketsInfo[j].sockfd,&recvMsg,0);
+       			recvCount=recvMessage(serverSocketsInfo[j].sockfd,&clientAddress,&header,filename);
        			printf("recv count is  and j is %d  %d\n",recvCount,j);
        			if(recvCount < 0) {
        				perror("recvMsg in the parent process failed :");
@@ -133,7 +109,7 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
        				 closeOtherSockets(serverSocketsInfo[j].sockfd,serverSocketsInfo,size);
        				 char **argv = (char **)(malloc(9*sizeof(char*)));
   
-       				 populateInputParams(serverSocketsInfo[j],recvMsg,sliWindowSize, argv);
+       				 populateInputParams(serverSocketsInfo[j],&clientAddress,&header,filename,sliWindowSize, argv);
        				 
        				  argv[8] = NULL;
        				 
@@ -153,45 +129,11 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
        			
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void populateInputParams(sockinfo currentSocketInfo, struct msghdr recvMsg, int sliWindowSize, char* argv[9]) {
-	
-	
-	struct sockaddr_in *cliAddr= recvMsg.msg_name;
-	
-	argv[0]=(char *)malloc(sizeof(char)*recvMsg.msg_iov[1].iov_len);
-	strcpy(argv[0],recvMsg.msg_iov[1].iov_base);
+void populateInputParams(sockinfo currentSocketInfo, struct sockaddr_in *cliAddr, hdr* header, char* filename, int sliWindowSize, char* argv[9]) {
+	argv[0] = (char *)malloc(strlen(filename)) ;
+	strcpy(argv[0],filename);
 /*	printf("the value in argv[0] is %s \n",argv[0]);*/
 
-	
 	argv[1]=(char *)malloc(INET_ADDRSTRLEN);
 	if(inet_ntop(AF_INET,&(cliAddr->sin_addr),argv[1],INET_ADDRSTRLEN)<=0)
 		perror("inet_ntop failed");
@@ -207,7 +149,7 @@ void populateInputParams(sockinfo currentSocketInfo, struct msghdr recvMsg, int 
 /*	printf("the value in argv[3] is %s \n",argv[3]);*/
 	
 	argv[4]=(char *)malloc(10);
-	snprintf(argv[4], 10,"%d",ntohs(((hdr*)recvMsg.msg_iov[0].iov_base)->windowSize));
+	snprintf(argv[4], 10,"%d",ntohs(header->windowSize));
 /*	printf("the value in argv[4] is %s \n",argv[4]);*/
 	
 	argv[5]=(char *)malloc(10);
@@ -216,7 +158,7 @@ void populateInputParams(sockinfo currentSocketInfo, struct msghdr recvMsg, int 
 /*	printf("the value in argv[5] is %s \n",argv[5]);*/
 	
 	argv[6]=(char *)malloc(10);
-	snprintf(argv[6], 10,"%d",ntohs(((hdr*)recvMsg.msg_iov[0].iov_base)->seq));
+	snprintf(argv[6], 10,"%d",ntohs(header->seq));
 /*	printf("the value in argv[6] is %s \n",argv[6]);	*/
 	
 	argv[7]=(char *)malloc(INET_ADDRSTRLEN);

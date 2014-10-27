@@ -143,11 +143,10 @@ int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 
 int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
 	struct msghdr msg;
-	
+	socklen_t clientAddressLength = INET_ADDRSTRLEN;
 	memset(&msg, 0, sizeof(msg));
 	if(data == NULL) {
 		struct iovec iov1[1];
-		printf("message iov length is 1 \n");
 		iov1[0].iov_base = messageHeader;
 		iov1[0].iov_len = sizeof(*messageHeader);
 		msg.msg_iov = iov1;
@@ -170,7 +169,8 @@ int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 	else {
 		 SA* saddress = (SA*)msg_name;
 		 msg.msg_name = saddress;
-		 msg.msg_namelen = sizeof(SA);
+		 msg.msg_namelen = clientAddressLength;
+		 
 	}
 	
 	return recvmsg(sockfd,&msg, 0);
