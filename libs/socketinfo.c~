@@ -263,7 +263,7 @@ int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInf
 	}
 	
 	if(bind(newSockfd, (SA*)&newServerSocket, INET_ADDRSTRLEN)<0) {
-		perror("\n bind  on new server socket failed %d\n", newSockfd);
+		perror("\n bind  on new server socket failed %d\n", );
 		exit(2);
 	}
 

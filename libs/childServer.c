@@ -126,7 +126,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 int main (int argc, char* argv[]) {
 	clientInformation currentClientInformation = proccessClientInfo(argc, argv);
 	int newSockfd = establishSecondHandshake(currentClientInformation);
-	//connectNewServerSocket(newSockfd, currentClientInformation);
+	connectNewServerSocket(newSockfd, currentClientInformation);
 	//sendFileAndCloseConnection(newSockfd);	 
 
 

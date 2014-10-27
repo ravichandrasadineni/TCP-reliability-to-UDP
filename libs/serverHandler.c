@@ -73,7 +73,6 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	}	
 	do {
 		returnValue = recvmsg(sockfd,&recvMsg, 0);
-		printf("return value is %d \n", returnValue);
 	}while((returnValue <0));
 	
 	if(returnValue < 0 ) {
@@ -83,10 +82,12 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	
 	timer.it_value.tv_sec =0;
 	timer.it_value.tv_usec = 0;
-	setitimer (SIGALRM, &timer, NULL);
+	timer.it_interval.tv_sec = 0;
+	timer.it_interval.tv_usec = 0;
+	setitimer (ITIMER_REAL, &timer, NULL);
 	serverseqNumber = initialHeader.seq;
 	int newPort = atoi(port);
-	printf("the port number of new server socket is %d \n",newPort);	
+	printf("the port number of new client socket is %d \n",newPort);	
 	close(sockfd);
 	
 	sockfd = getClientBindingSocket(&ipAddress,newPort,clientSocketInfo);
@@ -103,6 +104,7 @@ int handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, ch
 	char stringMessage[512];
 	memset(stringMessage,0,512);
 	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo);	
+	printf("establishHandshake called for the first time \n");
 	struct msghdr sendMsg, recvMsg;
 	memset(&sendMsg, 0, sizeof(sendMsg));
 	memset(&recvMsg, 0, sizeof(recvMsg)); 
@@ -129,7 +131,7 @@ int handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, ch
 		iovsend[0].iov_len = sizeof(initialHeader);
 		sendmsg(sockfd,&sendMsg, 0);
 		returnValue = recvmsg(sockfd,&recvMsg, 0);
-		printf("\n%d\n",errno);
+		printf("\n%s\n",stringMessage);
 		
 	}
 	
