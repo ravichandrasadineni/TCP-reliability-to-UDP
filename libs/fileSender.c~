@@ -1,7 +1,0 @@
-#include "fileSender.c"
-
-
-void sendFileAndCloseConnection() {
-
-
-}
