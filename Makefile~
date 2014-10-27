@@ -48,8 +48,8 @@ client: client.o $(OBJECTS)
 client.o: client.c 
 	${CC} ${CFLAGS} -c client.c 
 	
-stringutility.o: libs/stringutility.c
-	${CC} ${CFLAGS} -c libs/stringutility.c
+genericUtility.o: libs/genericUtility.c
+	${CC} ${CFLAGS} -c libs/genericUtility.c
 
 portutility.o: libs/portutility.c
 	${CC} ${CFLAGS} -c libs/portutility.c

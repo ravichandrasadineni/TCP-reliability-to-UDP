@@ -13,7 +13,6 @@ int main(int argc,char *argv[])
 	inet_ntop(AF_INET,&(ipAddress.sin_addr),ipAddrString,INET_ADDRSTRLEN);
 	printf("port number is %d\tIP Addr is %s\n",portNumber,ipAddrString);
 	sockfd=getClientBindingSocket(&ipAddress,portNumber,clientSocketInfo);
-	//printf("Sockfd value in main is %d\n",sockfd);
 	handleServer(sockfd,ipAddress, sliWindowsize, filename, clientSocketInfo);
 	return(0);
 }
