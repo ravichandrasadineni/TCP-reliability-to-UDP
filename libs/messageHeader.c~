@@ -1,0 +1,15 @@
+#include "messageHeader.h"
+
+
+hdr build_header(int seqNo, int ack, int synFlag, int finFlag, int windowSize, int congestionSize) {
+	hdr messageHeader; 
+	printf("the seq no in build header is %d \n", seqNo);
+	messageHeader.seq = htons(seqNo);
+	messageHeader.ack = htons(0);
+	messageHeader.synFlag = htons(synFlag);
+	messageHeader.finFlag = htons(finFlag);
+	messageHeader.windowSize = htons(windowSize);
+	messageHeader.congestionSize = htons(congestionSize);
+	return messageHeader;
+} 
+

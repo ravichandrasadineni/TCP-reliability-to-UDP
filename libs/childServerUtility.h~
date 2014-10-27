@@ -1,0 +1,3 @@
+#include "unp.h"
+
+clientInformation  proccessClientInfo(int argc, char* argv[]);

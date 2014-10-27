@@ -1,0 +1,18 @@
+Part 1 :
+ 
+ 1. FOR PREVENTING THE BINDING OF MULTICAST ADDRESSES and BROADCAST ADDRESS  we have these additional checks before creating UDP sockets:  
+		if (!(ifi->ifi_flags & IFF_BROADCAST))		printf("BCAST ");
+		if (!(ifi->ifi_flags & IFF_MULTICAST)	)	printf("MCAST ");
+	
+	FOR STROING THE DETAILS of each socket We have an array of following DATA STRUCTURES :
+		typedef struct {	
+			int sockfd;
+			struct in_addr ipAddr;
+			struct in_addr subnetMask;
+			struct in_addr networkAddr;
+		
+		} sockinfo
+		
+		Please refer to sockinfo.c for code.
+ 2. 
+		

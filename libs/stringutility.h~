@@ -1,0 +1,8 @@
+#ifndef STRING_UTILITY_H
+#define STRING_UTILITY_H
+int is_legal_int (char* );
+int getRandomSequenceNumber(int base);
+int max(int, int);
+int min(int,int);
+char *trimwhitespace(char* );
+#endif
