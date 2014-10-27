@@ -51,15 +51,11 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 		perror("failure while sending first SYN :");
 		exit(2);
 	}
-	timer.it_value.tv_sec = INITIAL_TIME_OUT;
-	timer.it_value.tv_usec = 0;
-	
-	timer.it_interval.tv_sec = 0;
-	timer.it_interval.tv_usec = 0;
-	
-	
-	setitimer (ITIMER_REAL, &timer, NULL);
-	
+	if(salarm(INITIAL_TIME_OUT)>0) {
+		printf("timer already set somewhere \n");
+		exit(2);
+	}
+
 	
 	if (sigsetjmp(jmpbuf,1)!=0) {
 		if(currentRetransmissions >=NUMBER_OF_RETRANSMITS) {
@@ -79,12 +75,7 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 			perror("failure while recieving first ACK :");
 			exit(2);
 		}
-	
-	timer.it_value.tv_sec =0;
-	timer.it_value.tv_usec = 0;
-	timer.it_interval.tv_sec = 0;
-	timer.it_interval.tv_usec = 0;
-	setitimer (ITIMER_REAL, &timer, NULL);
+	salarm(0);
 	serverseqNumber = initialHeader.seq;
 	int newPort = atoi(port);
 	printf("the port number of new client socket is %d \n",newPort);	

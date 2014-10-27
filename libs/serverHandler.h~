@@ -5,6 +5,7 @@
 #include "unp.h"
 #include "messageHeader.h"
 #include "socketinfo.h"
+#include "genericUtility.h"
 #include <setjmp.h>
-int handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename);
+int handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename, sockinfo* clientSocketInfo);
 #endif

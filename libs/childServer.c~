@@ -76,13 +76,10 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 			exit(2);
 		}
 		
-	 	timer.it_value.tv_sec = INITIAL_TIME_OUT;
-		timer.it_value.tv_usec = 0;
-	
-		timer.it_interval.tv_sec = 0;	
-		timer.it_interval.tv_usec = 0;
-		
-		setitimer (ITIMER_REAL, &timer, NULL);
+	 	if(salarm(INITIAL_TIME_OUT)>0) {
+			printf("timer already set somewhere \n");
+			exit(2);
+		}
 		
 		if (sigsetjmp(jmpbuf,1)!=0) {
 			if(currentRetransmissions >=NUMBER_OF_RETRANSMITS) {
@@ -114,9 +111,6 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 		currentClientSeqNumber = revcHeader.seq;
 		currentSequenceNumber++;
 		
-		timer.it_value.tv_sec =0;
-		timer.it_value.tv_usec = 0;
-		setitimer (SIGALRM, &timer, NULL);	 
 	
 		close(currentClientInformation.currentSocketDiscriptor);
 		return newSockfd;
@@ -126,7 +120,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 int main (int argc, char* argv[]) {
 	clientInformation currentClientInformation = proccessClientInfo(argc, argv);
 	int newSockfd = establishSecondHandshake(currentClientInformation);
-	//connectNewServerSocket(newSockfd, currentClientInformation);
+	connectNewServerSocket(newSockfd, currentClientInformation);
 	//sendFileAndCloseConnection(newSockfd);	 
 
 
