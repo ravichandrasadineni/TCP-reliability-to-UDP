@@ -28,4 +28,6 @@ int isLoopbackAddr(struct sockaddr_in);
 struct sockaddr_in getClientSocketDetails(clientInformation currentClientInformation);
 int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInformation);
 void connectNewServerSocket(int, clientInformation);
+void printSocketDetails(struct sockaddr_in socketDetails);
+void connectAgain(int sockFd, int port);
 #endif

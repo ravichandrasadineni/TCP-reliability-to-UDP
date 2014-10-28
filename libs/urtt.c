@@ -2,8 +2,8 @@
 #include	"urtt.h"
 #define	RTT_RTOCALC(ptr) (((ptr)->rtt_srtt/8) +  ((ptr)->rtt_rttvar))
 
-#define	URTT_RXTMIN      1	/* min retransmit timeout value, seconds */
-#define	URTT_RXTMAX      3	/* max retransmit timeout value, seconds */
+#define	URTT_RXTMIN      1000	/* min retransmit timeout value, milliSeconds */
+#define	URTT_RXTMAX      3000	/* max retransmit timeout value, milliSeconds */
 #define	URTT_MAXNREXMT 	12	/* max #times to retransmit */
 
  int urtt_minmax(int rto)

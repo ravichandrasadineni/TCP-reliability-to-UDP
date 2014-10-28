@@ -26,7 +26,9 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 	socklen_t len=INET_ADDRSTRLEN;
 	struct sockaddr_in	sockaddr;
 	int currentRetransmissions =0,time=0;
+
 	getsockname(currentClientInformation.currentSocketDiscriptor,(SA*)&sockaddr,&len);
+
 	int newSockfd =getNewSocket(sockaddr, currentClientInformation);
 	getsockname(newSockfd,(SA*)&sockaddr,&len);
 	currentClientSeqNumber = getRandomSequenceNumber(10000);
@@ -53,6 +55,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 	}
 
 	if (sigsetjmp(jmpbuf,1)!=0) {
+		printf("First SigSet Jump Called \n");
 		if(currentRetransmissions >=NUMBER_OF_RETRANSMITS) {
 			char ipAddrString[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET,&(clientAddress.sin_addr),ipAddrString,INET_ADDRSTRLEN);
@@ -89,9 +92,10 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 int main (int argc, char* argv[]) {
 	clientInformation currentClientInformation = proccessClientInfo(argc, argv);
 	int newSockfd = establishSecondHandshake(currentClientInformation);
+
 	connectNewServerSocket(newSockfd, currentClientInformation);
 	breakfiletoBuffers(currentClientInformation.filename);
-	sendFileAndCloseConnection(newSockfd,currentClientInformation.clientInitialWindowSize, currentClientInformation.serverWindowSize, currentClientSeqNumber,currentServerSequenceNumber);
+	sendFileAndCloseConnection(newSockfd,currentClientInformation, currentClientSeqNumber,currentServerSequenceNumber);
 
 
 }

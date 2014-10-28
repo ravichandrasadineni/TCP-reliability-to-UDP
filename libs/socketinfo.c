@@ -8,7 +8,7 @@ int isLoopbackAddr(struct sockaddr_in input)
 	
 	struct sockaddr_in loopbackaddr;
 	inet_pton(AF_INET,"127.0.0.1",&loopbackaddr.sin_addr);
-	if(input.sin_addr.s_addr=loopbackaddr.sin_addr.s_addr){
+	if(input.sin_addr.s_addr == loopbackaddr.sin_addr.s_addr){
 		return TRUE;
 	}
 	else
@@ -180,6 +180,20 @@ int getClientBindingSocket(struct sockaddr_in *ipAddress,int port,sockinfo* clie
 	return sockfd;
 }
 
+void connectAgain(int sockfd, int port) {
+	int len = INET_ADDRSTRLEN;
+	struct sockaddr_in peeraddr;
+	getpeername(sockfd,(SA*)&peeraddr,&len);
+	peeraddr.sin_port=htons(port);
+	if(connect(sockfd, (SA*)&peeraddr,sizeof(peeraddr)) < 0) {
+		perror("unable to connect again to the new port ERROR :");
+		exit(1);
+	}
+	getsockname(sockfd,(SA*)&peeraddr,&len);
+	printSocketDetails(peeraddr);
+}
+
+
 int getServerBindingSockets( int port, sockinfo* serverSocketsInfo)
 {
 	struct ifi_info *serInterfaces;
@@ -228,24 +242,38 @@ int getServerBindingSockets( int port, sockinfo* serverSocketsInfo)
 }
 
 
+void printSocketDetails(struct sockaddr_in socketDetails) {
+		char clientAddressString[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET,&(socketDetails.sin_addr),clientAddressString,INET_ADDRSTRLEN);
+		printf("the client address is %s \n", clientAddressString);
+		printf("the client port is %d\n", ntohs(socketDetails.sin_port));
+	return;
+}
+
+
+
+
 struct sockaddr_in getClientSocketDetails(clientInformation currentClientInformation) {
 	struct sockaddr_in ClientSocketDetails;
 	ClientSocketDetails.sin_family= AF_INET;
 	ClientSocketDetails.sin_addr=currentClientInformation.ipAddress;
-	ClientSocketDetails.sin_port =htons(currentClientInformation.port); 
+	ClientSocketDetails.sin_port =htons(currentClientInformation.port);
+	char clientAddressString[INET_ADDRSTRLEN];
+	printSocketDetails(ClientSocketDetails);
 	return ClientSocketDetails;
 }
 
 
 
 int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInformation) {
-	int newSockfd=socket(AF_INET,SOCK_DGRAM,0);	
-	char on = '1';
+
+	int newSockfd=socket(AF_INET,SOCK_DGRAM,0);
+	printf("new SockFd is %d \n", newSockfd);
 	if(newSockfd<0){
 		perror("Error while creating socket :\n");
 		exit(2);
 	}
-	
+	int on = 1;
 	sockinfo serverSockinfo;
 	struct sockaddr_in newServerSocket, ClientSocketDetails ;
 	newServerSocket.sin_family= AF_INET;
@@ -255,11 +283,14 @@ int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInf
 	serverSockinfo.ipAddr = sockaddr.sin_addr;
 	serverSockinfo.subnetMask = currentClientInformation.subnetMask;
 	serverSockinfo.networkAddr.s_addr = sockaddr.sin_addr.s_addr & currentClientInformation.subnetMask.s_addr;
-	
-	
 	if (isLocal(serverSockinfo,ClientSocketDetails)) {
-		printf("DO NOT ROUTE OPTION SET FOR NEW SERVER SOCKET \n");
-		setsockopt(newSockfd, SOL_SOCKET, SO_DONTROUTE, &on, sizeof(on));
+		int returnValue = setsockopt(newSockfd, SOL_SOCKET, SO_DONTROUTE, &on, sizeof(on));
+		if(returnValue  < 0) {
+			perror(" Setting Do Not Route Option Failed Error :");
+			exit(2);
+		}
+
+
 	}
 	
 	if(bind(newSockfd, (SA*)&newServerSocket, INET_ADDRSTRLEN)<0) {

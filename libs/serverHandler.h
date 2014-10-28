@@ -7,5 +7,5 @@
 #include "socketinfo.h"
 #include "genericUtility.h"
 #include <setjmp.h>
-int handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename, sockinfo* clientSocketInfo);
+void handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename, sockinfo* clientSocketInfo);
 #endif

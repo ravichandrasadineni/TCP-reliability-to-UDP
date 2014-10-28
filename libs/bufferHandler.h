@@ -16,8 +16,8 @@
  
  typedef struct serverWindowSegement serverWindowSeg;
  void breakfiletoBuffers(char* filename);
- void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg* head, serverWindowSeg* tail, int* currentServerSequenceNumber);
- void handleAck(int numOfAck, serverWindowSeg* head, serverWindowSeg* tail, int* currentServerSequenceNumber);
+ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber);
+ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber);
  
  
 #endif

@@ -4,4 +4,4 @@
 #include "urtt.h"
 #include "genericUtility.h"
 #include <setjmp.h>
-void sendFileAndCloseConnection(int sockfd, int clientWindowSize, int serverWindowSize, int currentClientSeqNumber, int currentServerSequenceNumber);
+void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo, int currentClientSeqNumber, int currentServerSequenceNumber);

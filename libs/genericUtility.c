@@ -4,17 +4,17 @@
 typedef int bool;
 
 bool is_valid_int (char* integerString) {	
-    while (*integerString)
-    {
-        if (isdigit (*integerString) ) {
-            integerString++;
-        }
-        else {
-            return FALSE;
-        }
-    }
-    return TRUE;
-            
+	while (*integerString)
+	{
+		if (isdigit (*integerString) ) {
+			integerString++;
+		}
+		else {
+			return FALSE;
+		}
+	}
+	return TRUE;
+
 }
 
 int getRandomSequenceNumber(int base) {
@@ -26,49 +26,56 @@ int getRandomSequenceNumber(int base) {
 
 char *trimwhitespace(char *str)
 {
-  char *end;
-  while(isspace(*str)) str++;
-  if(*str == 0)  
-    return str;
-  end = str + strlen(str) - 1;
-  while(end > str && isspace(*end)) end--;
-  *(end+1) = 0;
-  return str;
+	char *end;
+	while(isspace(*str)) str++;
+	if(*str == 0)
+		return str;
+	end = str + strlen(str) - 1;
+	while(end > str && isspace(*end)) end--;
+	*(end+1) = 0;
+	return str;
 }
 
 unsigned int
 malarm (unsigned int milliseconds)
 {
-  struct itimerval old, new;
-  new.it_interval.tv_usec = 0;
-  new.it_interval.tv_sec = 0;
-  new.it_value.tv_usec = milliseconds*1000;
-  new.it_value.tv_sec = 0;
-  if (setitimer (ITIMER_REAL, &new, &old) < 0)
-    return 0;
-  else
-    return old.it_value.tv_sec;
+
+	struct itimerval old, new;
+	new.it_interval.tv_usec = 0;
+	new.it_interval.tv_sec = 0;
+	new.it_value.tv_usec = 0;
+	new.it_value.tv_sec = 0;
+	if(milliseconds > 1000 ) {
+		new.it_value.tv_sec = milliseconds/1000;
+	}
+	new.it_value.tv_usec = (milliseconds%1000)*1000;
+	if (setitimer (ITIMER_REAL, &new, &old) < 0) {
+		perror("setitimer failed ErrorNo :");
+		exit(2);
+	}
+	else
+		return old.it_value.tv_sec;
 }
 
 
 unsigned int
 salarm (unsigned int seconds)
 {
-  struct itimerval old, new;
-  new.it_interval.tv_usec = 0;
-  new.it_interval.tv_sec = 0;
-  new.it_value.tv_usec = 0;
-  new.it_value.tv_sec = (long int) seconds;
-  if (setitimer (ITIMER_REAL, &new, &old) < 0)
-    return 0;
-  else
-    return old.it_value.tv_sec;
+	struct itimerval old, new;
+	new.it_interval.tv_usec = 0;
+	new.it_interval.tv_sec = 0;
+	new.it_value.tv_usec = 0;
+	new.it_value.tv_sec = (long int) seconds;
+	if (setitimer (ITIMER_REAL, &new, &old) < 0)
+		return 0;
+	else
+		return old.it_value.tv_sec;
 }
 
 
 struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
 	struct msghdr msg;
-	
+
 	memset(&msg, 0, sizeof(msg));
 	if(data == NULL) {
 		struct iovec iov1[1];
@@ -87,30 +94,40 @@ struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}
-	
+
 	if(msg_name == NULL) {
-		 msg.msg_name = NULL;
-		 msg.msg_namelen = 0;
+		msg.msg_name = NULL;
+		msg.msg_namelen = 0;
 	}
 	else {
-		 SA* saddress = (SA*)msg_name;
-		 msg.msg_name = saddress;
-		 msg.msg_namelen = sizeof(SA);
+		SA* saddress = (SA*)msg_name;
+		msg.msg_name = saddress;
+		msg.msg_namelen = sizeof(SA);
 	}
-	
+
 	return msg;
 }
 
+
+void printSocketDetailsforSocket(int sockfd) {
+	struct sockaddr_in socketDetails;
+	int len = INET_ADDRSTRLEN;
+	getpeername(sockfd,(SA*)&socketDetails,&len);
+	char clientAddressString[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET,&(socketDetails.sin_addr),clientAddressString,INET_ADDRSTRLEN);
+	printf("the client address is %s \n", clientAddressString);
+	printf("the client port is %d\n", ntohs(socketDetails.sin_port));
+
+}
 
 
 
 int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
 	struct msghdr msg;
-	
+	printf("send Message called with data \n %s \n", data);
 	memset(&msg, 0, sizeof(msg));
 	if(data == NULL) {
 		struct iovec iov1[1];
-		printf("message iov length is 1 \n");
 		iov1[0].iov_base = messageHeader;
 		iov1[0].iov_len = sizeof(*messageHeader);
 		msg.msg_iov = iov1;
@@ -125,18 +142,22 @@ int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}
-	
+
 	if(msg_name == NULL) {
-		 msg.msg_name = NULL;
-		 msg.msg_namelen = 0;
+		msg.msg_name = NULL;
+		msg.msg_namelen = 0;
 	}
 	else {
-		 SA* saddress = (SA*)msg_name;
-		 msg.msg_name = saddress;
-		 msg.msg_namelen = sizeof(SA);
+		SA* saddress = (SA*)msg_name;
+		msg.msg_name = saddress;
+		msg.msg_namelen = sizeof(SA);
 	}
-	
-	return sendmsg(sockfd,&msg, 0);
+	int returnValue =  sendmsg(sockfd,&msg, 0);
+	if(returnValue  < 0) {
+		perror("Unable to send message Error :");
+		exit(3);
+	}
+	return returnValue;
 }
 
 
@@ -161,19 +182,25 @@ int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}
-	
+
 	if(msg_name == NULL) {
-		 msg.msg_name = NULL;
-		 msg.msg_namelen = 0;
+		msg.msg_name = NULL;
+		msg.msg_namelen = 0;
 	}
 	else {
-		 SA* saddress = (SA*)msg_name;
-		 msg.msg_name = saddress;
-		 msg.msg_namelen = clientAddressLength;
-		 
+		SA* saddress = (SA*)msg_name;
+		msg.msg_name = saddress;
+		msg.msg_namelen = clientAddressLength;
+
 	}
-	
-	return recvmsg(sockfd,&msg, 0);
+
+	int returnValue =  recvmsg(sockfd,&msg, 0);
+
+	if(returnValue  < 0) {
+		perror("Unable to recv message Error :");
+		exit(3);
+	}
+	return returnValue;
 }
 
 

@@ -50,30 +50,30 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 			exit(2);
 		}
 	salarm(0);
-	serverseqNumber = initialHeader.seq;
+	serverseqNumber = ntohs(initialHeader.seq);
 	int newPort = atoi(port);
-	printf("the port number of new client socket is %d \n",newPort);	
-	close(sockfd);
-	sockfd = getClientBindingSocket(&ipAddress,newPort,clientSocketInfo);
+	printf("the port number of new child socket is %d \n",newPort);
+	connectAgain(sockfd,newPort);
 	return sockfd;	
 }
 
 
-int handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo) {
+void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo) {
 	hdr initialHeader,recvHeader;
 	int returnValue =0;
 	char stringMessage[512];
 	memset(stringMessage,0,512);
 	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo);	
-	printf("establishHandshake called for the first time \n");
 	while(1) {
-		initialHeader  = build_header(clientcurrentSeqNumber,serverseqNumber+1,1,0,sliWindowsize,0);
+		printf("the sequence number is %d\n",++serverseqNumber);
+		initialHeader  = build_header(clientcurrentSeqNumber,serverseqNumber,1,0,sliWindowsize,0);
+		printf("waiting on send Message \n");
 		returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
-		serverseqNumber++;	
+		printf("waiting on recv Message \n");
 		returnValue = recvMessage(sockfd,NULL, &recvHeader, stringMessage);
 		printf("\n%s\n",stringMessage);
-		
-	}	
+
+	}
 }
 		
 	
