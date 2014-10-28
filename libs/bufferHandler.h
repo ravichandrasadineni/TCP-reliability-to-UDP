@@ -3,12 +3,21 @@
 #include "unp.h"
 #include "messageHeader.h"
 
-typedef struct {
- 	msghdr *header;
- 	int ts;
+ struct serverWindowSegement {
+ 	 hdr header;
+ 	char *data;
+ 	unsigned int ts;
  	int numOfRtsm;
  	int numOfAcks;
- 	windowSegment *next;
+ 	int isSent;
+ 	struct serverWindowSegement *next;
  	 
- } serverWindowSeg; 
+ } ; 
+ 
+ typedef struct serverWindowSegement serverWindowSeg;
+ void breakfiletoBuffers(char* filename);
+ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg* head, serverWindowSeg* tail, int* currentServerSequenceNumber);
+ void handleAck(int numOfAck, serverWindowSeg* head, serverWindowSeg* tail, int* currentServerSequenceNumber);
+ 
+ 
 #endif

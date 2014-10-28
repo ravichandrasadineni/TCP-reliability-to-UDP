@@ -31,7 +31,7 @@ FLAGS = -g -O0
 
 CFLAGS = ${FLAGS} -I unpv13e/lib
 all: client server childServer
-OBJECTS=genericUtility.o portutility.o get_ifi_info_plus.o socketinfo.o fileUtility.o clientHandler.o serverHandler.o messageHeader.o childServerUtility.o
+OBJECTS=genericUtility.o portutility.o get_ifi_info_plus.o socketinfo.o fileUtility.o clientHandler.o serverHandler.o messageHeader.o childServerUtility.o bufferHandler.o fileSender.o urtt.o
 
 childServer : childServer.o $(OBJECTS)
 	${CC} ${FLAGS} -o childServer childServer.o $(OBJECTS) ${LIBS}
@@ -75,10 +75,19 @@ messageHeader.o: libs/messageHeader.c
 	
 childServerUtility.o: libs/childServerUtility.c
 	${CC} ${CFLAGS} -c libs/childServerUtility.c
+	
+bufferHandler.o: libs/bufferHandler.c
+	${CC} ${CFLAGS} -c libs/bufferHandler.c
 
+fileSender.o: libs/fileSender.c
+	${CC} ${CFLAGS} -c libs/fileSender.c
+	
+urtt.o: libs/urtt.c
+	${CC} ${CFLAGS} -c libs/urtt.c
+	
 # pick up the thread-safe version of readline.c from directory "threads"
 
 
 clean:
-	rm server server.o client client.o stringutility.o portutility.o get_ifi_info_plus.o socketinfo.o serverHandler.o messageHeader.o
+	rm server client childServer $(OBJECTS)
 

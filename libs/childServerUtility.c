@@ -28,3 +28,14 @@ clientInformation  proccessClientInfo(int argc, char* argv[]) {
 	currentclientInformation.clientSeqNumber = atoi(argv[6]);
  	return currentclientInformation;
 }
+
+
+int getMinimum(int serverWindowSize,int clientWindowSize, int congestionWindow ) {
+	if ((serverWindowSize <= clientWindowSize )&& (serverWindowSize <= congestionWindow)) {
+		return serverWindowSize;
+	}
+	else if ((clientWindowSize <= serverWindowSize )&& (clientWindowSize <= congestionWindow)) {
+		return clientWindowSize;
+	}
+	return congestionWindow;
+}

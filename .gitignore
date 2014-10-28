@@ -30,4 +30,5 @@
 client
 server
 childServer
-
+Debug/**
+.metadata/**
