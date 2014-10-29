@@ -8,16 +8,21 @@ static void sig_alarm(int signo) {
 }
 
 void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo, int currentClientSeqNumber, int currentServerSequenceNumber) {
-
-	int clientWindowSize =  htons(currentClientInfo.clientInitialWindowSize);
+	int clientWindowSize =  currentClientInfo.clientInitialWindowSize;
 	int serverWindowSize  = currentClientInfo.serverWindowSize;
+	int isZeroWindowSize = 0;
 	//struct sockaddr_in clientAddress = getClientSocketDetails(currentClientInfo);
+	printf("current Sequence number %d \n", currentServerSequenceNumber);
 	urtt_info urttInfo;
 	urtt_init(&urttInfo);
 	hdr currentClientHeader;
 	int congestionWindow = 1000;
 	int currentWaitingAckNumber =0;
+	int numOfProbesSent = 0;
 	int currentMinimum = getMinimum(serverWindowSize,clientWindowSize, congestionWindow );
+	if(currentMinimum  == 0) {
+		isZeroWindowSize = 1;
+	}
 	printf("current Minimum is %d \n", currentMinimum);
 	int notDoneSending = 1;
 	serverWindowSeg *head = NULL, *tail = NULL;
@@ -31,8 +36,10 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 			printf("Timer on a Existing Timer \n");
 			exit(3);
 		}
-		currentWaitingAckNumber = (current->header.seq)+1;
+
+		currentWaitingAckNumber = ntohs(current->header.seq)+1;
 		while((currentMinimum  > 0) &&(current!= NULL )) {
+			printf("%d packets left to sent \n", currentMinimum);
 			if(current->isSent) {
 				continue;
 			}
@@ -40,6 +47,7 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 				current->isSent = 1;
 				current->ts = urtt_ts(&urttInfo);
 				sendMessage(sockfd,NULL,&(current->header),current->data);
+				//printf("%s\n",current->data);
 				if(ntohs(current->header.finFlag) == 1) {
 					notDoneSending =0;
 					break;
@@ -53,15 +61,19 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 			if(sigsetjmp(jmpBuf,1)!=0) {
 				printf("sigsetjmp called \n");
 				malarm(0);
-
-				if(currentMinimum==0) {
+				if(isZeroWindowSize) {
+					if(numOfProbesSent == 12) {
+						printf("Client has  Locked its window. No point Probing More than 12 times. Giving Up \n");
+						exit(2);
+					}
 					sendMessage(sockfd,NULL,&(head->header),head->data);
-					malarm(2);
+					malarm(2000);
+					numOfProbesSent++;
 				}
 				else {
 					head->numOfAcks =0;
 					sendMessage(sockfd,NULL,&(head->header),head->data);
-					if(urtt_timeout(&urttInfo,&(head->numOfRtsm)) > 0) {
+					if((urtt_timeout(&urttInfo,&(head->numOfRtsm)) > 0)) {
 						printf("Tried 12 times reaching ipAddress for the following client Giving Up \n");
 						printSocketDetailsforSocket(sockfd);
 						exit(2);
@@ -70,10 +82,10 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 				}
 			}
 			recvMessage(sockfd,NULL, &currentClientHeader, NULL);
-			printf("After recv message \n");
-			if(currentClientHeader.ack == currentWaitingAckNumber-1) {
+			if(ntohs(currentClientHeader.ack) == currentWaitingAckNumber-1) {
+				printf("Duplicate ACK \n");
 				head->numOfAcks += 1;
-				if(head->numOfAcks >=4) {
+				if(head->numOfAcks >=2) {
 					malarm(0);
 					head->numOfAcks =0;
 					sendMessage(sockfd,NULL,&(head->header),head->data);
@@ -81,21 +93,27 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 					malarm(urtt_start(&urttInfo,head->numOfRtsm));
 				}
 			}
-			else if(currentClientHeader.ack  >= currentWaitingAckNumber){
+			else if(ntohs(currentClientHeader.ack)  >= currentWaitingAckNumber){
 				malarm(0);
 				unsigned int currentTime = urtt_ts(&urttInfo);
 				urtt_stop(&urttInfo,currentTime-head->ts,head->numOfRtsm);
-				currentMinimum = getMinimum(serverWindowSize,currentClientHeader.windowSize,congestionWindow);
+				currentMinimum = getMinimum(serverWindowSize,ntohs(currentClientHeader.windowSize),congestionWindow);
 				if(currentMinimum  == 0) {
+					isZeroWindowSize = 1;
 					printf("Client window size is  0 \n");
 					malarm(2000);
+
 					continue;
 				}
 				else {
-					int numOfAcks = currentClientHeader.ack-currentWaitingAckNumber+1;
+					isZeroWindowSize  = 0;
+					numOfProbesSent = 0;
+					int numOfAcks = ntohs(currentClientHeader.ack)-currentWaitingAckNumber+1;
 					handleAck(numOfAcks,&head, &tail,&currentServerSequenceNumber);
+					currentWaitingAckNumber = ntohs(head->header.seq)+1;
 				}
-				if((ntohs(head->header.finFlag == 0)) && (ntohs(tail->header.finFlag==1))) {
+				if((ntohs(head->header.finFlag) == 0) && (ntohs(tail->header.finFlag)==1)) {
+					printf("before calling continue \n");
 					continue;
 				}
 				break;
@@ -103,7 +121,7 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 		}while(1);
 
 	}
-
+ printf("The child has exited \n");
 }
 
 

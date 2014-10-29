@@ -31,6 +31,7 @@ void breakfiletoBuffers(char* filename){
 	for(i=0;i<n;i++){
 		fread(buffer[i],512,1,fp);
 	}
+
 	fclose(fp);
 }
 
@@ -47,8 +48,8 @@ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, se
 		if(currentSeg == NULL) {
 			currentSeg = (serverWindowSeg*)malloc(sizeof(serverWindowSeg));
 			*head =  currentSeg;
-			buildHeaderAndData(&(currentSeg->header), &(currentSeg->data), (*currentServerSequenceNumber));
 			*currentServerSequenceNumber = *currentServerSequenceNumber +1;
+			buildHeaderAndData(&(currentSeg->header), &(currentSeg->data), (*currentServerSequenceNumber));
 			currentSeg->numOfRtsm = 0;
 			currentSeg->isSent = 0;
 			currentSeg->next = NULL;
@@ -56,8 +57,8 @@ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, se
 		else {
 			currentSeg->next = (serverWindowSeg*)malloc(sizeof(serverWindowSeg));
 			currentSeg = currentSeg->next;
-			buildHeaderAndData(&(currentSeg->header), &(currentSeg->data), (*currentServerSequenceNumber));
 			*currentServerSequenceNumber = *currentServerSequenceNumber +1;
+			buildHeaderAndData(&(currentSeg->header), &(currentSeg->data), (*currentServerSequenceNumber));
 			currentSeg->numOfRtsm = 0;
 			currentSeg->isSent = 0;
 			currentSeg->next = NULL;
@@ -68,6 +69,7 @@ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, se
 
 
 void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber) {
+	printf("Num of Acks is %d \n", numOfAck);
 	int i;
 	serverWindowSeg* headPointer = *head;
 	serverWindowSeg* tailPointer = *tail;
@@ -75,7 +77,7 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 	serverWindowSeg *currentTail =NULL; 
 	for( i=0; i < numOfAck; i++) {
 		currentHead = headPointer->next;
-		free(tailPointer);
+		free(headPointer);
 		headPointer = currentHead;
 	}
 
@@ -85,11 +87,13 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 		tailPointer->next = NULL;
 		tailPointer->numOfRtsm = 0;
 		tailPointer->isSent = 0;
-		buildHeaderAndData(&(tailPointer->header),&(tailPointer->data),(*currentServerSequenceNumber) );
 		*currentServerSequenceNumber = *currentServerSequenceNumber +1;
+		buildHeaderAndData(&(tailPointer->header),&(tailPointer->data),(*currentServerSequenceNumber) );
 		currentTail->next= tailPointer;
 	}
-
+	printf("The head Pointer is pointing to %d \n", ntohs(headPointer->header.seq));
+	*head = headPointer;
+	*tail = tailPointer;
 }
 
 

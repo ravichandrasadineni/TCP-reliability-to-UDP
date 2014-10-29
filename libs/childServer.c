@@ -19,7 +19,8 @@ static void sig_alarm(int signo) {
 
 }
 
-int establishSecondHandshake(clientInformation currentClientInformation) {
+int establishSecondHandshake(clientInformation* currentClientInfo) {
+	clientInformation currentClientInformation = *currentClientInfo;
 	hdr recvHeader;
 	int returnValue=0;
 	char port[512];
@@ -31,9 +32,9 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 
 	int newSockfd =getNewSocket(sockaddr, currentClientInformation);
 	getsockname(newSockfd,(SA*)&sockaddr,&len);
-	currentClientSeqNumber = getRandomSequenceNumber(10000);
+	currentServerSequenceNumber = getRandomSequenceNumber(10000);
 	currentAckNumber = currentClientInformation.clientSeqNumber +1;
-	hdr initialHeader = build_header(currentClientSeqNumber, currentAckNumber,1,0,currentClientInformation.serverWindowSize,0);
+	hdr initialHeader = build_header(currentServerSequenceNumber, currentAckNumber,1,0,currentClientInformation.serverWindowSize,0);
 	snprintf(port, 10,"%d",ntohs(sockaddr.sin_port));
 	struct sockaddr_in clientAddress = getClientSocketDetails(currentClientInformation);
 	Signal(SIGALRM, sig_alarm);
@@ -71,6 +72,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 
 	do {
 		returnValue = recvMessage(newSockfd, NULL,&recvHeader,NULL);
+		printf("current ack Number is %d \n", ntohs(recvHeader.ack));
 	}while(returnValue < 0);
 
 	if(returnValue <0) {
@@ -83,6 +85,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 		exit(2);
 	}
 	currentClientSeqNumber = ntohs(recvHeader.seq);
+	currentClientInformation.clientInitialWindowSize = ntohs(recvHeader.windowSize);
 	salarm(0);
 	close(currentClientInformation.currentSocketDiscriptor);
 	return newSockfd;
@@ -91,7 +94,7 @@ int establishSecondHandshake(clientInformation currentClientInformation) {
 
 int main (int argc, char* argv[]) {
 	clientInformation currentClientInformation = proccessClientInfo(argc, argv);
-	int newSockfd = establishSecondHandshake(currentClientInformation);
+	int newSockfd = establishSecondHandshake(&currentClientInformation);
 
 	connectNewServerSocket(newSockfd, currentClientInformation);
 	breakfiletoBuffers(currentClientInformation.filename);

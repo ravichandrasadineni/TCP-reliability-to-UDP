@@ -124,7 +124,6 @@ void printSocketDetailsforSocket(int sockfd) {
 
 int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
 	struct msghdr msg;
-	printf("send Message called with data \n %s \n", data);
 	memset(&msg, 0, sizeof(msg));
 	if(data == NULL) {
 		struct iovec iov1[1];

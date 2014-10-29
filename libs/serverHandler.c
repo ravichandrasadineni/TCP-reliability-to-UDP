@@ -1,4 +1,5 @@
 #include "serverHandler.h"
+#include "clientBufferHandler.h"
 static sigjmp_buf jmpbuf;
 struct itimerval timer;
 int serverCurrentSeqNumber = 0;
@@ -20,9 +21,9 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	char port[512];
 	Signal(SIGALRM, sig_alarm);
 
-  sendagain :
-	
-	 returnValue = sendMessage(sockfd,NULL,&initialHeader, filename);
+	sendagain :
+
+	returnValue = sendMessage(sockfd,NULL,&initialHeader, filename);
 	if(returnValue < 0 ) {	
 		perror("failure while sending first SYN :");
 		exit(2);
@@ -44,11 +45,11 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 	do {
 		returnValue = recvMessage(sockfd,NULL, &recvHeader, port);
 	}while((returnValue <0));
-	
+
 	if(returnValue < 0 ) {
-			perror("failure while recieving first ACK :");
-			exit(2);
-		}
+		perror("failure while recieving first ACK :");
+		exit(2);
+	}
 	salarm(0);
 	serverseqNumber = ntohs(initialHeader.seq);
 	int newPort = atoi(port);
@@ -59,22 +60,31 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 
 
 void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo) {
-	hdr initialHeader,recvHeader;
+	hdr initialHeader,recvHeader,replyHeader;
 	int returnValue =0;
-	char stringMessage[512];
+	char stringMessage[512] ;
 	memset(stringMessage,0,512);
-	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo);	
-	while(1) {
-		printf("the sequence number is %d\n",++serverseqNumber);
-		initialHeader  = build_header(clientcurrentSeqNumber,serverseqNumber,1,0,sliWindowsize,0);
-		printf("waiting on send Message \n");
-		returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
-		printf("waiting on recv Message \n");
-		returnValue = recvMessage(sockfd,NULL, &recvHeader, stringMessage);
-		printf("\n%s\n",stringMessage);
+	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo);
 
+	initialHeader  = build_header(clientcurrentSeqNumber,++serverseqNumber,1,0,sliWindowsize,0);
+	printf("THe initial ACK Number %d \n", serverseqNumber);
+	printf("waiting on send Message \n");
+	returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
+
+	//createClientSlidingWindow(&head,sliWindowsize);
+
+	while(1) {
+		printf("waiting on recv Message \n");
+
+		returnValue = recvMessage(sockfd,NULL, &recvHeader, stringMessage);
+		replyHeader = populateClientBuffer(ntohs(initialHeader.ack),sliWindowsize,stringMessage,recvHeader);
+		returnValue=sendMessage(sockfd,NULL,&replyHeader,NULL);
+		if(ntohs(recvHeader.finFlag)) {
+			printf("Successfully  transfered the file \n");
+			break;
+		}
 	}
 }
-		
-	
+
+
 
