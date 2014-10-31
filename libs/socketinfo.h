@@ -11,7 +11,7 @@ typedef struct {
 
 
 typedef  struct{
-	char filename[512];
+	char filename[488];
 	struct in_addr ipAddress;
 	struct in_addr subnetMask;
 	int port;

@@ -17,20 +17,21 @@ void breakfiletoBuffers(char* filename){
 	fseek(fp,0L,SEEK_END);
 	size=ftell(fp);
 	rewind(fp);
-	if(size%512==0){
-		n=size/512;
+	if(size%488==0){
+		n=size/488;
 	}
 	else{
-		n=size/512 + 1;
+		n=size/488 + 1;
 	}
 	segmentsInFile = n;
 	buffer = (char**)malloc(sizeof(char*)*(n));
 	for(i=0;i<n;i++){
-		buffer[i]=(char*)malloc(sizeof(char)*512);
+		buffer[i]=(char*)malloc(sizeof(char)*488);
 	}
 	for(i=0;i<n;i++){
-		fread(buffer[i],512,1,fp);
+		fread(buffer[i],488,1,fp);
 	}
+
 
 	fclose(fp);
 }
@@ -69,7 +70,7 @@ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, se
 
 
 void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber) {
-	printf("Num of Acks is %d \n", numOfAck);
+	//printf("Num of Acks is %d \n", numOfAck);
 	int i;
 	serverWindowSeg* headPointer = *head;
 	serverWindowSeg* tailPointer = *tail;
@@ -90,8 +91,10 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 		*currentServerSequenceNumber = *currentServerSequenceNumber +1;
 		buildHeaderAndData(&(tailPointer->header),&(tailPointer->data),(*currentServerSequenceNumber) );
 		currentTail->next= tailPointer;
+		printf("The number of segments in file is %d\n",segmentsInFile);
+
 	}
-	printf("The head Pointer is pointing to %d \n", ntohs(headPointer->header.seq));
+	//printf("The head Pointer is pointing to %d \n", ntohs(headPointer->header.seq));
 	*head = headPointer;
 	*tail = tailPointer;
 }
@@ -102,8 +105,8 @@ void buildHeaderAndData(hdr* messageHeader, char** data, int currentServerSequen
 
 
 	if(currentReadingPosition >= segmentsInFile) {
-		(*messageHeader) = build_header(currentServerSequenceNumber, 0,0, 1,0,0);
-		(*data) = NULL;
+			(*messageHeader) = build_header(currentServerSequenceNumber, 0,0, 1,0,0);
+			(*data) = NULL;
 	}
 	else {
 		(*messageHeader) = build_header(currentServerSequenceNumber, 0,0, 0,0,0);

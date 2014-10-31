@@ -73,7 +73,7 @@ salarm (unsigned int seconds)
 }
 
 
-struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
+struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]) {
 	struct msghdr msg;
 
 	memset(&msg, 0, sizeof(msg));
@@ -90,7 +90,7 @@ struct msghdr buildMessage(struct sockaddr_in* msg_name,  hdr* messageHeader ,  
 		iov2[0].iov_base = messageHeader;
 		iov2[0].iov_len = sizeof(*messageHeader);
 		iov2[1].iov_base = data;
-		iov2[1].iov_len = 512;
+		iov2[1].iov_len = 488;
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}
@@ -122,7 +122,7 @@ void printSocketDetailsforSocket(int sockfd) {
 
 
 
-int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
+int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]) {
 	struct msghdr msg;
 	memset(&msg, 0, sizeof(msg));
 	if(data == NULL) {
@@ -137,7 +137,7 @@ int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 		iov2[0].iov_base = messageHeader;
 		iov2[0].iov_len = sizeof(*messageHeader);
 		iov2[1].iov_base = data;
-		iov2[1].iov_len = 512;
+		iov2[1].iov_len = 488;
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}
@@ -161,7 +161,7 @@ int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 
 
 
-int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]) {
+int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]) {
 	struct msghdr msg;
 	socklen_t clientAddressLength = INET_ADDRSTRLEN;
 	memset(&msg, 0, sizeof(msg));
@@ -177,7 +177,7 @@ int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 		iov2[0].iov_base = messageHeader;
 		iov2[0].iov_len = sizeof(*messageHeader);
 		iov2[1].iov_base = data;
-		iov2[1].iov_len = 512;
+		iov2[1].iov_len = 488;
 		msg.msg_iov = iov2;
 		msg.msg_iovlen = 2;	
 	}

@@ -31,10 +31,10 @@ clientInformation  proccessClientInfo(int argc, char* argv[]) {
 
 
 int getMinimum(int serverWindowSize,int clientWindowSize, int congestionWindow ) {
-	printf("server Window Size is %d \n", serverWindowSize);
+	/*printf("server Window Size is %d \n", serverWindowSize);
 	printf("client Window Size is %d \n", clientWindowSize);
 	printf("congestion Window Size is %d \n", congestionWindow);
-	if ((serverWindowSize <= clientWindowSize )&& (serverWindowSize <= congestionWindow)) {
+*/	if ((serverWindowSize <= clientWindowSize )&& (serverWindowSize <= congestionWindow)) {
 		return serverWindowSize;
 	}
 	else if ((clientWindowSize <= serverWindowSize )&& (clientWindowSize <= congestionWindow)) {

@@ -23,7 +23,7 @@ int establishSecondHandshake(clientInformation* currentClientInfo) {
 	clientInformation currentClientInformation = *currentClientInfo;
 	hdr recvHeader;
 	int returnValue=0;
-	char port[512];
+	char port[488];
 	socklen_t len=INET_ADDRSTRLEN;
 	struct sockaddr_in	sockaddr;
 	int currentRetransmissions =0,time=0;

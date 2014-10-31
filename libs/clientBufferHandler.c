@@ -1,21 +1,5 @@
 #include "clientBufferHandler.h"
-/*
-void createClientSlidingWindow(clientWindowSeg **head,int slidingWindowSize){
-	int i;
-	printf("\nThe size of sliding window is %d \n",slidingWindowSize);
-	clientWindowSeg *initialSeg;
-	initialSeg=(clientWindowSeg *)malloc(sizeof(clientWindowSeg));
- *head = initialSeg;
-	for(i=0;i<slidingWindowSize;i++){
-		initialSeg->header = build_header(0,0,0,0,0,0);
-		initialSeg->data = NULL;
-		initialSeg->isReceived = 0;
-		initialSeg->next = (clientWindowSeg *)malloc(sizeof(clientWindowSeg));
-		initialSeg = initialSeg->next;
-		printf("i = %d\n",i);
-	}
 
-}*/
 
 clientWindowSeg *head = NULL, *tail=NULL;
 clientWindowSeg* createWindowSeg() {
@@ -30,7 +14,7 @@ clientWindowSeg* createWindowSeg() {
 }
 
 void fillInTheMiddle(hdr recvHeader, char* Message, int diff) {
-	printf("diff is %d \n", diff);
+	//printf("diff is %d \n", diff);
 	clientWindowSeg * currentPosition;
 	currentPosition = head;
 	int i;
@@ -71,7 +55,7 @@ int findWindowSize(int slidingWindowSize){
 		else
 			break;
 	}
-	printf("current windowsize is %d \n",size);
+	//printf("current windowsize is %d \n",size);
 	return size;
 }
 
@@ -87,16 +71,16 @@ int findACK(int slidingWindowSize){
 		else
 			break;
 	}
-	printf("current ack is %d \n",ack);
+	//printf("current ack is %d \n",ack);
 	return ack;
 }
 
 hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader){
-	printf("%s \n",Message);
+	printf("%s",Message);
 	hdr replyHeader;
 	int diff,i,currentWindowSize,currentServerSeqNo,ack;
 	currentServerSeqNo = ntohs(recvHeader.seq);
-	printf("\nThe current Server sequence number is %d\n",ntohs(recvHeader.seq));
+	//printf("\nThe current Server sequence number is %d\n",ntohs(recvHeader.seq));
 	if(head == NULL) {
 		head =createWindowSeg();
 		tail = head;

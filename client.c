@@ -6,7 +6,7 @@ int main(int argc,char *argv[])
 {
 	int portNumber=0,sliWindowsize=0,randSeed=0,milliSec=0,sockfd;
 	float prob=0;
-	char filename[512],ipAddrString[INET_ADDRSTRLEN];
+	char filename[488],ipAddrString[INET_ADDRSTRLEN];
 	sockinfo clientSocketInfo[100];
 	struct sockaddr_in ipAddress;
 	readingClientInput(&ipAddress,&portNumber,filename,&sliWindowsize,&randSeed,&prob,&milliSec); //in fileUtility.c

@@ -71,7 +71,7 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
 	int pid;
 	hdr header;
     char* recvBuffer;
-    char filename[512];
+    char filename[488];
     FD_ZERO(&rset);
     struct sockaddr_in clientAddress;
     signal(SIGCHLD, clearClientInformation);	
