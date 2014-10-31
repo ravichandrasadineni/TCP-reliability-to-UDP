@@ -8,6 +8,7 @@ int main(int argc,char *argv[])
 {
 	int portNumber=0, sliWindowSize=0, socketfd[100],numOfSockets =0;
 	sockinfo serverSocketsInfo[100];
+	srand((unsigned) time(NULL));
 	readServerInput(&portNumber, &sliWindowSize);
 	numOfSockets = getServerBindingSockets(portNumber, serverSocketsInfo);
 	handleClients(serverSocketsInfo,numOfSockets,sliWindowSize);

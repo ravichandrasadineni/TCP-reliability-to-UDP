@@ -2,7 +2,6 @@
 #include "clientBufferHandler.h"
 static sigjmp_buf jmpbuf;
 struct itimerval timer;
-int serverCurrentSeqNumber = 0;
 int clientcurrentSeqNumber =0;
 int serverseqNumber =0;
 static void sig_alarm(int signo) {
@@ -51,7 +50,7 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 		exit(2);
 	}
 	salarm(0);
-	serverseqNumber = ntohs(initialHeader.seq);
+	serverseqNumber = ntohs(recvHeader.seq);
 	int newPort = atoi(port);
 	printf("the port number of new child socket is %d \n",newPort);
 	connectAgain(sockfd,newPort);
@@ -68,7 +67,7 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 
 	initialHeader  = build_header(clientcurrentSeqNumber,++serverseqNumber,1,0,sliWindowsize,0);
 	returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
-
+	printf("current Client Sequence Number and Server Sequence number %d %d \n", clientcurrentSeqNumber, serverseqNumber);
 
 
 	while(1) {
@@ -76,12 +75,18 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 		if(returnValue  < 0) {
 			perror("receiving  Message Failed : \n");
 		}
-		if(ntohs(recvHeader.finFlag)) {
-			printf("Successfully  transfered the file \n");
-			break;
+		printf("current Client Sequence Number and Server Sequence number %d %d \n", clientcurrentSeqNumber, ntohs(recvHeader.seq));
+		if((serverseqNumber -1) == ntohs(recvHeader.seq)) {
+			returnValue = sendMessage(sockfd,NULL,&initialHeader, NULL);
 		}
-		replyHeader = populateClientBuffer(ntohs(initialHeader.ack),sliWindowsize,stringMessage,recvHeader);
-		returnValue=sendMessage(sockfd,NULL,&replyHeader,NULL);
+		else {
+			replyHeader = populateClientBuffer(ntohs(initialHeader.ack),sliWindowsize,stringMessage,recvHeader);
+			returnValue=sendMessage(sockfd,NULL,&replyHeader,NULL);
+			if(ntohs(recvHeader.finFlag)) {
+				printf("Successfully  transfered the file \n");
+				break;
+			}
+		}
 		if(returnValue  < 0) {
 			perror("sending  Message Failed : \n");
 		}

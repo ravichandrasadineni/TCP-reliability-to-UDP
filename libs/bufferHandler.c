@@ -66,11 +66,13 @@ void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, se
 		}
 	}
 	*tail = currentSeg;
+	printf("The head Pointer is pointing to %d \n", ntohs((*head)->header.seq));
+	printf("The tail Pointer is pointing to %d \n", ntohs((*tail)->header.seq));
 }
 
 
 void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber) {
-	//printf("Num of Acks is %d \n", numOfAck);
+	printf("Num of Acks is %d \n", numOfAck);
 	int i;
 	serverWindowSeg* headPointer = *head;
 	serverWindowSeg* tailPointer = *tail;
@@ -94,17 +96,19 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 		printf("The number of segments in file is %d\n",segmentsInFile);
 
 	}
-	//printf("The head Pointer is pointing to %d \n", ntohs(headPointer->header.seq));
 	*head = headPointer;
 	*tail = tailPointer;
+	printf("The head Pointer is pointing to %d \n", ntohs((*head)->header.seq));
+	printf("The tail Pointer is pointing to %d \n", ntohs((*tail)->header.seq));
 }
 
 
 
 void buildHeaderAndData(hdr* messageHeader, char** data, int currentServerSequenceNumber) {
 
-
+	printf("currentReadingPosition is %d \n", currentReadingPosition);
 	if(currentReadingPosition >= segmentsInFile) {
+			printf("is a Fin Packet \n");
 			(*messageHeader) = build_header(currentServerSequenceNumber, 0,0, 1,0,0);
 			(*data) = NULL;
 	}

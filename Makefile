@@ -25,7 +25,7 @@
 
 CC = gcc
 
-LIBS = -lresolv -lnsl -pthread unpv13e/libunp.a
+LIBS = -lresolv -lnsl -pthread -lm unpv13e/libunp.a
 	
 FLAGS = -g -O0
 

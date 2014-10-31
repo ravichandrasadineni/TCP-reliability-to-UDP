@@ -10,6 +10,7 @@ int main(int argc,char *argv[])
 	sockinfo clientSocketInfo[100];
 	struct sockaddr_in ipAddress;
 	readingClientInput(&ipAddress,&portNumber,filename,&sliWindowsize,&randSeed,&prob,&milliSec); //in fileUtility.c
+	srand((unsigned) randSeed);
 	inet_ntop(AF_INET,&(ipAddress.sin_addr),ipAddrString,INET_ADDRSTRLEN);
 	printf("port number is %d\tIP Addr is %s\n",portNumber,ipAddrString);
 	sockfd=getClientBindingSocket(&ipAddress,portNumber,clientSocketInfo);

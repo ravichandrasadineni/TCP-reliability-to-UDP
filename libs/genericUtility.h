@@ -12,5 +12,7 @@ unsigned int salarm (unsigned int seconds);
 char *trimwhitespace(char* );
 int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
 int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
-
+int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
+int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]);
+int  clientsendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
 #endif

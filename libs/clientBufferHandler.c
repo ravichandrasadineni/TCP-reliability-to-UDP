@@ -88,6 +88,7 @@ hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,h
 	}
 	diff = currentServerSeqNo-head->serverSeqNo;
 	if(diff > slidingWindowSize) {
+		printf("diff and SlidingWindowSizes are %d %d \n",diff, slidingWindowSize);
 		printf("Sever is Malfunctioning, sent packets more than the window size \n");
 		exit(3);
 	}
