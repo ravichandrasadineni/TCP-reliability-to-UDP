@@ -1,8 +1,4 @@
-/**************Team Members ***********************/
-Ravi Chandra Sadineni (109754581)
-Harshavardhan Chowdary Ellanti (109596321)
-Harika Davala(109762085)
-/**************************************************/
+
 
 
 The given get_ifi_info already filters out the broadcast addresses. We are doing it in three ways
@@ -20,13 +16,13 @@ Number of retransmission has been moved from urtt_info structure to sliding wind
 
 
 Regarding RTO:
-		Modifications Done For RTT
-			1.  URTT_RXTMIN = 1000,URTT_RXTMAX = 3000 and  RTT_MAXNREXMT to 12.
-			2.  Maintian MilliSecs insteads of Secs.
-			3. Change Min Max Function(ranges between 1000 millisecs and 3000 millisecs)
-			4. Implemented Karn's algorithm while finding the new time-out.
-			5. Moved Number of Retransmissions from rrt_info structure to slidingWindow Structure.
-			Please  look into libs/urtt.c and  libs/urtt.h for further clarification
+	Modifications Done For RTT
+		1.  URTT_RXTMIN = 1000,URTT_RXTMAX = 3000 and  RTT_MAXNREXMT to 12.
+		2.  Maintian MilliSecs insteads of Secs.
+		3. Change Min Max Function(ranges between 1000 millisecs and 3000 millisecs)
+		4. Implemented Karn's algorithm while finding the new time-out.
+		5. Moved Number of Retransmissions from rrt_info structure to slidingWindow Structure.
+		Please  look into libs/urtt.c and  libs/urtt.h for further clarification
 			
 The alarm is set for the first packet that is being sent on network. We will wait on the recvMsg call for response. If the time-out(using setItimer) occurs for the packet then sigLongJump is called and then sigSetJump is called, in sigSetJump we are calling urtt_timeout which will effectively time-out on the particular packet we are waiting for, we again call urtt_start for the packet with the updated 'RTO' where we will make sure that the time-out will not exceed 3000ms and should not be less than 1000ms.
 
@@ -44,14 +40,13 @@ Receiver sliding window:
 									  : data --> data segment of the received packet(if it is received already)
 									  : server seq No  --> sequence Number of the packet that is expected to occupy the position
 									  : isRecieved --> to check if the packet has already been received.
-
-		This segments are part of a SharedBuffer structure which is shared between producer and consumer thread.
+	This segments are part of a SharedBuffer structure which is shared between producer and consumer thread.
 						
 	There are three scenarios in this sliding window. 
-			1.  Initially when no packet is received head and tail are pointed to  Null. If first packet is received then head is pointed to the first segment and so is tail. 
-			2. when we receive any packet other than first packet we will move the tail from the current position to the position of the packet we received and add the packet at the particular position. Intermediate positions are left empty if the packets in that position are not received. Advertising  is (window Size - window size is returned as the count of the nodes from head to the packet which is not received).
-			3.  when we receive any packet whose sequence number is between the head and tail we traverse to the position of the packet and insert it at the corresponding position based on the sequence number. Advertising window is calculated similarly as above and Current Ack number will be sent to server.
-	
+		1.  Initially when no packet is received head and tail are pointed to  Null. If first packet is received then head is pointed to the first segment and so is tail. 
+		2. when we receive any packet other than first packet we will move the tail from the current position to the position of the packet we received and add the packet at the particular position. Intermediate positions are left empty if the packets in that position are not received. Advertising  is (window Size - window size is returned as the count of the nodes from head to the packet which is not received).
+		3.  when we receive any packet whose sequence number is between the head and tail we traverse to the position of the packet and insert it at the corresponding position based on the sequence number. Advertising window is calculated similarly as above and Current Ack number will be sent to server.
+
 	We are implementing mutex and threads on the above buffer for reading and writing the buffer to make sure that no race conditions occur. We are acquiring lock before we update the buffer in producer thread and release it when done. On consumer side also we will lock the buffer before reading the contents and release when done. 
 	
 	Persistent Timer :
