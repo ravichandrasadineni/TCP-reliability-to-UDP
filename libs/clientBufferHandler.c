@@ -57,7 +57,6 @@ int findWindowSize(int slidingWindowSize, sharedBuf *buffer){
 		else
 			break;
 	}
-	//printf("current windowsize is %d \n",size);
 	return size;
 }
 
@@ -79,7 +78,6 @@ int findACK(int slidingWindowSize, sharedBuf *buffer){
 
 hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader, sharedBuf *buffer){
 
-	printf("previous ack No is %d \n", previousAckNo);
 	hdr replyHeader;
 	int diff,i,currentWindowSize,currentServerSeqNo,ack;
 	currentServerSeqNo = ntohs(recvHeader.seq);
@@ -90,15 +88,13 @@ hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,h
 		buffer->tail = buffer->head ;
 		buffer->head ->serverSeqNo = previousAckNo;
 	}
-	printf("head ->serverSeqNo is %d \n",buffer->head->serverSeqNo);
 	if(buffer->head->serverSeqNo > currentServerSeqNo) {
-		printf("Entered the condition \n");
+		currentWindowSize = findWindowSize(slidingWindowSize, buffer);
 		replyHeader = build_header(0,buffer->head->serverSeqNo,0,0,currentWindowSize,0);
 		pthread_mutex_unlock(&buffer->mutex);
 		return replyHeader;
 	}
 	diff = currentServerSeqNo-buffer->head ->serverSeqNo;
-	printf("current diff is %d \n", diff);
 	if(diff > slidingWindowSize) {
 		printf("diff and SlidingWindowSizes are %d %d \n",diff, slidingWindowSize);
 		printf("Sever is Malfunctioning, sent packets more than the window size \n");
@@ -106,11 +102,9 @@ hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,h
 	}
 	currentWindowSize = buffer->tail->serverSeqNo - buffer->head ->serverSeqNo;
 	if(diff<currentWindowSize ) {
-		printf("Filling in the middle \n");
 		fillInTheMiddle(recvHeader, Message, diff, buffer);
 	}
 	else {
-		printf("Extending Window \n");
 		extendWindow(recvHeader, Message, buffer);
 	}
 
@@ -118,7 +112,6 @@ hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,h
 	ack = findACK(slidingWindowSize, buffer);
 	replyHeader = build_header(0,ack,0,0,currentWindowSize,0);
 	buffer->currentSize = slidingWindowSize-currentWindowSize;
-	printf("exited populateClientBuffer %d\n",buffer->currentSize);
 	pthread_mutex_unlock(&buffer->mutex);
 
 	return replyHeader;

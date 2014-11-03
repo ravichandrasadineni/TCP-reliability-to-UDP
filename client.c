@@ -15,11 +15,8 @@ void *produce(void *arg) {
 	int sockfd;
 	char ipAddrString[INET_ADDRSTRLEN];
 	inet_ntop(AF_INET,&(ipAddress.sin_addr),ipAddrString,INET_ADDRSTRLEN);
-	printf("port number is %d\tIP Addr is %s\n",portNumber,ipAddrString);
 	sockfd=getClientBindingSocket(&ipAddress,portNumber,clientSocketInfo);
-	printf("The probability value before handleServer method in producer thread is %f\n",prob);
 	handleServer(sockfd,ipAddress, sliWindowsize, filename, clientSocketInfo, &sharedBuffer, &prob);
-	printf("The probability value in producer thread is %f\n",prob);
 
 
 	return NULL;

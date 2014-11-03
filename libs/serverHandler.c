@@ -13,7 +13,6 @@ static void sig_alarm(int signo) {
 int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo,float probability) {
 	clientcurrentSeqNumber = getRandomSequenceNumber(10000);
 	int currentRetransmissions =0,time=0;
-	printf("the current sequence number is %d \n",clientcurrentSeqNumber);
 	hdr initialHeader = build_header(clientcurrentSeqNumber, 0,1,0,sliWindowsize,0);
 	hdr recvHeader;
 	int returnValue=0;
@@ -61,7 +60,6 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 
 void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, char* filename, sockinfo* clientSocketInfo, sharedBuf *buffer,float *probability) {
 	float prob= *probability;
-	printf("The probability value in handle server function is %f\n",prob);
 	hdr previousHeader,recvHeader,replyHeader;
 	int shouldWait;
 	int returnValue =0;
@@ -74,14 +72,12 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 		perror("sending  Message Failed : \n");
 		exit(0);
 	}
-	printf("current Client Sequence Number and Server Sequence number %d %d \n", ntohs(recvHeader.seq), serverseqNumber);
 	while(1) {
 		returnValue = clientrecvMessage(sockfd,NULL, &recvHeader, stringMessage,prob);
 		if(returnValue  < 0) {
 			perror("receiving  Message Failed : \n");
 			exit(0);
 		}
-		printf("present current Client Sequence Number and Server Sequence number %d %d \n", ntohs(previousHeader.ack), ntohs(recvHeader.seq));
 		if((serverseqNumber -1) == ntohs(recvHeader.seq)) {
 			returnValue = clientsendMessage(sockfd,NULL,&previousHeader, NULL,prob);
 		}

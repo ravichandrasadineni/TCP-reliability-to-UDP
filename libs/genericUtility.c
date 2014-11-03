@@ -37,7 +37,6 @@ bool is_valid_int (char* integerString) {
 
 int getRandomSequenceNumber(int base) {
 	int returnValue = rand()%base;
-	printf("The return Value is %d \n", returnValue);
 	return returnValue;
 }
 
@@ -221,10 +220,10 @@ int  clientsendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHe
 	int discardthePacket = shouldDiscard(randomSeed);
 	int count;
 	if(discardthePacket == 1){
-		printf("Packet with Acknowledgment number %d is discarded while sending \n",ntohs(messageHeader->ack));
+		printf("segment with acknowledgment Number  %d  and WindowSize is  %d Discarded  While sending  \n",ntohs(messageHeader->ack),ntohs(messageHeader->windowSize) );
 		return -2;
 	}
-	printf("Packet with Acknowledgment number %d sent sucessfully \n",ntohs(messageHeader->ack));
+	printf("segment with acknowledgment number  %d  and WindowSize %d sent successfully \n",ntohs(messageHeader->ack),ntohs(messageHeader->windowSize));
 	count = sendMessage(sockfd,msg_name,messageHeader,data);
 	return count;
 }
@@ -278,7 +277,7 @@ void printfBuffer(sharedBuf *buffer) {
 			printf("\n file printed sucessfully \n");
 			break;
 		}
-		printf("%s ",pointer->data);
+		printf("%s \n",pointer->data);
 
 		pointer = pointer->next;
 		if(pointer != NULL)
@@ -300,12 +299,12 @@ int  clientrecvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHe
 		}
 		discardthePacket = shouldDiscard(randomSeed);
 		if(discardthePacket == 1){
-			printf("Packet with Sequence number %d is discarded while receiving \n",ntohs(messageHeader->seq));
+			printf("segment with server sequence number %d is discarded while receiving \n",ntohs(messageHeader->seq));
 			continue;
 
 		}
 		else {
-			printf("Packet with Sequence number %d is received \n",ntohs(messageHeader->seq));
+			printf("segment with server sequence number %d is received \n",ntohs(messageHeader->seq));
 			break;
 		}
 	}
