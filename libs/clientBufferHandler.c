@@ -76,7 +76,7 @@ int findACK(int slidingWindowSize, sharedBuf *buffer){
 	return ack;
 }
 
-hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader, sharedBuf *buffer){
+hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader, sharedBuf *buffer, int *isDone){
 
 	hdr replyHeader;
 	int diff,i,currentWindowSize,currentServerSeqNo,ack;
@@ -112,6 +112,8 @@ hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,h
 	ack = findACK(slidingWindowSize, buffer);
 	replyHeader = build_header(0,ack,0,0,currentWindowSize,0);
 	buffer->currentSize = slidingWindowSize-currentWindowSize;
+	(*isDone) = isFinSetForLastPacket(buffer);
+	printCurrentBuffer(buffer);
 	pthread_mutex_unlock(&buffer->mutex);
 
 	return replyHeader;

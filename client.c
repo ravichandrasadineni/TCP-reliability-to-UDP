@@ -31,10 +31,10 @@ void *consume(void *arg) {
 		if(sharedBuffer.currentSize >0) {
 
 			printfBuffer(&sharedBuffer);
-			if(sharedBuffer.isDone == 1) {
-				pthread_mutex_unlock(&sharedBuffer.mutex);
-				break;
-			}
+		}
+		if(sharedBuffer.isDone == 1) {
+			pthread_mutex_unlock(&sharedBuffer.mutex);
+			break;
 		}
 		pthread_mutex_unlock(&sharedBuffer.mutex);
 		int currentMilliSec = getSleepingTime(milliSec);

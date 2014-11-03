@@ -24,6 +24,20 @@ static void sig_alarm(int signo) {
 }
 
 
+void printCurrentInFlight(int serverWindowSize, serverWindowSeg* head, serverWindowSeg* tail) {
+	printf("current inFLight Segments :");
+	serverWindowSeg* current = head;
+	int i;
+	for(i=0; i<serverWindowSize;i++) {
+		if(current ->isSent== 1) {
+			printf(" %d ", ntohs(current->header.seq));
+			current = current->next;
+
+		}
+
+	}
+	printf("\n");
+}
 int computeCWINandSSThreshold(int scenario,int serverWindowSize, serverWindowSeg* head, serverWindowSeg* tail,int clientWindowSize,int numberofACKs){
 	int currentFull = 0, i;
 	serverWindowSeg* current = head;
@@ -37,8 +51,8 @@ int computeCWINandSSThreshold(int scenario,int serverWindowSize, serverWindowSeg
 		}
 	}
 	serverWindowSize-= currentFull;
-	printf("Server Window size is %d , client window size is %d , and CWIN  %d\n",serverWindowSize,clientWindowSize,CWIN);
 	numOfACKSReceived += numberofACKs;
+	printf("Server Window Size : %d , Advertising window Size : %d\n",serverWindowSize,clientWindowSize);
 	if(SSThreshold == 0){
 		if(scenario==0){//for Normal ACK
 			CWIN -= numOfACKSReceived;
@@ -102,21 +116,22 @@ int computeCWINandSSThreshold(int scenario,int serverWindowSize, serverWindowSeg
 
 		}
 	}
+	printCurrentInFlight(serverWindowSize,head, tail);
 	int currentMinimum = getMinimum(serverWindowSize,clientWindowSize, CWIN );
 	if(scenario == 0 && SSThreshold == 0)
-		printf("Doubling mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
+		printf("Doubling mode : CWIN is %d and SSThreshold is NOT SET\n",CWIN);
 	else if(scenario == 0 && SSThreshold > 1)
-		printf("Doubling mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
+		printf("Doubling mode : CWIN is %d and SSThreshold is %d\n",CWIN,SSThreshold);
 
 	else if(scenario == 1 && SSThreshold == 0)
-		printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
+		printf("Fast Retransmit mode : CWIN is %d and SSThreshold is NOT SET\n",CWIN);
 	else if(scenario == 1 && SSThreshold > 1)
-		printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
+		printf("Fast Retransmit mode : CWIN is %d and SSThreshold is %d\n",CWIN,SSThreshold);
 
 	if(scenario == 2 && SSThreshold == 0)
-		printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
+		printf("Timeout mode : CWIN is %d and SSThreshold is NOT SET\n",CWIN);
 	else if (scenario == 2 && SSThreshold > 1)
-		printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
+		printf("Timeout mode : CWIN is %d and SSThreshold is %d\n",CWIN,SSThreshold);
 	return currentMinimum;
 }
 
@@ -173,7 +188,7 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 				printf("SEQ NO %d sent \n",ntohs(current->header.seq));
 				sendMessage(sockfd,NULL,&(head->header),head->data);
 				if((urtt_timeout(&urttInfo,&(head->numOfRtsm)) > 0)) {
-					printf("Tried 12 times reaching ipAddress for the following client Giving Up \n");
+					printf("Tried 12 times reaching ipAddress for the below client Giving Up \n");
 					printSocketDetailsforSocket(sockfd);
 					exit(2);
 				}
@@ -233,7 +248,7 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 		}while(1);
 
 	}
-	printf("The child has exited \n");
+	printf("File Transferred Successfully. Child has exited\n");
 }
 
 

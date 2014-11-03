@@ -35,6 +35,7 @@ bool is_valid_int (char* integerString) {
 
 }
 
+
 int getRandomSequenceNumber(int base) {
 	int returnValue = rand()%base;
 	return returnValue;
@@ -274,18 +275,46 @@ void printfBuffer(sharedBuf *buffer) {
 		clientWindowSeg* currentSegment = pointer;
 		if(ntohs(pointer ->header.finFlag) == 1) {
 			buffer->isDone = 1;
-			printf("\n file printed sucessfully \n");
+			printf("File printed successfully \n");
 			break;
 		}
 		printf("%s \n",pointer->data);
 
 		pointer = pointer->next;
 		if(pointer != NULL)
-		free(currentSegment);
+			free(currentSegment);
 	}
 	buffer->head=pointer;
 	buffer->currentSize =0;
 
+}
+
+
+void  printCurrentBuffer(sharedBuf *buffer) {
+	clientWindowSeg* pointer = buffer->head;
+	printf ("current client sliding Window contents :");
+	for(pointer=buffer->head; pointer!=NULL;pointer= pointer->next) {
+		if(pointer->isReceived) {
+			printf(" %d ", pointer->serverSeqNo);
+		}
+		else {
+			printf (" X ");
+		}
+	}
+	printf("\n");
+}
+
+int isFinSetForLastPacket(sharedBuf *buffer) {
+	int i, size =0;
+	clientWindowSeg* pointer = buffer->head;
+	for(i=0; i<buffer->currentSize;i++ ) {
+		clientWindowSeg* currentSegment = pointer;
+		if(ntohs(pointer ->header.finFlag) == 1) {
+			return 1;
+		}
+		pointer = pointer->next;
+	}
+	return 0;
 }
 
 

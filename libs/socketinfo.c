@@ -230,12 +230,13 @@ int getServerBindingSockets( int port, sockinfo* serverSocketsInfo)
 		inet_ntop(AF_INET, &(serverSocketsInfo->subnetMask), subnetMaskString, INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &(serverSocketsInfo->networkAddr), networkAddrString, INET_ADDRSTRLEN);
 		printf("IP Address is : %s, Subnet Mask is : %s, Network Address is : %s   \n",ipAddressString,subnetMaskString, networkAddrString);
+
 		serverSocketsInfo++;
 
 	}
 	printf("\n");
 	getsockname(sockfd,(SA*)&sockaddr,&len);
-	printf("After Binding: Server address is:%s and Ephemeral port is %d\n",inet_ntoa(sockaddr.sin_addr),(int)ntohs(sockaddr.sin_port));
+
 	free(ifihead);
 	return numOfSockets;
 }

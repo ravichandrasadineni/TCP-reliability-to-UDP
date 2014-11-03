@@ -62,6 +62,7 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 	float prob= *probability;
 	hdr previousHeader,recvHeader,replyHeader;
 	int shouldWait;
+	int isDone =0;
 	int returnValue =0;
 	char stringMessage[488] ;
 
@@ -82,13 +83,13 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 			returnValue = clientsendMessage(sockfd,NULL,&previousHeader, NULL,prob);
 		}
 		else {
-			replyHeader = populateClientBuffer(ntohs(previousHeader.ack),sliWindowsize,stringMessage,recvHeader, buffer);
+			replyHeader = populateClientBuffer(ntohs(previousHeader.ack),sliWindowsize,stringMessage,recvHeader, buffer,&isDone);
 			previousHeader = replyHeader;
-			returnValue=clientsendMessage(sockfd,NULL,&replyHeader,NULL,prob);
-			if(ntohs(recvHeader.finFlag)) {
-				printf("Successfully received the file \n");
+			if(isDone) {
+				printf("Successfully received the file. Closing Connection \n");
 				break;
 			}
+			clientsendMessage(sockfd,NULL,&replyHeader,NULL,prob);
 		}
 		if(returnValue  == -1) {
 			perror("sending  Message Failed : \n");
