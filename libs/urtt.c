@@ -12,7 +12,6 @@
 		rto = URTT_RXTMIN;
 	else if (rto > URTT_RXTMAX)
 		rto = URTT_RXTMAX;
-	printf("The min max functioned returned %d\n",rto);
 	return(rto);
 }
 
@@ -45,7 +44,6 @@ int urtt_start( urtt_info *ptr,  int numOfTransmissions)
 {
 	if(numOfTransmissions == 0)
 		ptr->prtt_rto = ptr->rtt_rto;
-	printf("The urtt_start info for %d time transmission is %d\n",numOfTransmissions,ptr->prtt_rto);
 	return ptr->rtt_rto ;		
 }
 

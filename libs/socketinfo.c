@@ -267,7 +267,6 @@ struct sockaddr_in getClientSocketDetails(clientInformation currentClientInforma
 int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInformation) {
 
 	int newSockfd=socket(AF_INET,SOCK_DGRAM,0);
-	printf("new SockFd is %d \n", newSockfd);
 	if(newSockfd<0){
 		perror("Error while creating socket :\n");
 		exit(2);
