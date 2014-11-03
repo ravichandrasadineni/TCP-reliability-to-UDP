@@ -44,7 +44,7 @@ int establishHandshake(int sockfd, struct sockaddr_in ipAddress, int sliWindowsi
 			goto sendagain; 
 		}
 	}	
-	returnValue = clientrecvMessage(sockfd,NULL, &recvHeader, port,probability);
+	returnValue = recvMessage(sockfd,NULL, &recvHeader, port);
 
 	if(returnValue == -1 ) {
 		perror("failure while receiving first ACK :");
@@ -66,31 +66,27 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 	int shouldWait;
 	int returnValue =0;
 	char stringMessage[488] ;
-
+	memset(stringMessage,0,488);
 	sockfd = establishHandshake(sockfd,ipAddress,sliWindowsize,filename, clientSocketInfo,prob);
 	previousHeader  = build_header(clientcurrentSeqNumber,++serverseqNumber,1,0,sliWindowsize,0);
 	returnValue = clientsendMessage(sockfd,NULL,&previousHeader, NULL,prob);
-	if(returnValue  == -1) {
-		perror("sending  Message Failed : \n");
-		exit(0);
-	}
-	printf("current Client Sequence Number and Server Sequence number %d %d \n", ntohs(recvHeader.seq), serverseqNumber);
+	printf("current Client Sequence Number and Server Sequence number %d %d \n", clientcurrentSeqNumber, serverseqNumber);
 	while(1) {
 		returnValue = clientrecvMessage(sockfd,NULL, &recvHeader, stringMessage,prob);
 		if(returnValue  < 0) {
 			perror("receiving  Message Failed : \n");
 			exit(0);
 		}
-		printf("present current Client Sequence Number and Server Sequence number %d %d \n", ntohs(previousHeader.ack), ntohs(recvHeader.seq));
+		printf("current Client Sequence Number and Server Sequence number %d %d \n", serverseqNumber, ntohs(recvHeader.seq));
 		if((serverseqNumber -1) == ntohs(recvHeader.seq)) {
 			returnValue = clientsendMessage(sockfd,NULL,&previousHeader, NULL,prob);
 		}
 		else {
 			replyHeader = populateClientBuffer(ntohs(previousHeader.ack),sliWindowsize,stringMessage,recvHeader, buffer);
-			previousHeader = replyHeader;
+			//printfBuffer(buffer);
 			returnValue=clientsendMessage(sockfd,NULL,&replyHeader,NULL,prob);
 			if(ntohs(recvHeader.finFlag)) {
-				printf("Successfully received the file \n");
+				printf("Successfully  transfered the file \n");
 				break;
 			}
 		}
@@ -98,6 +94,38 @@ void handleServer(int sockfd, struct sockaddr_in ipAddress, int sliWindowsize, c
 			perror("sending  Message Failed : \n");
 			exit(0);
 		}
+		printf(" current Size of the buffer is %d \n",buffer->currentSize );
+				pthread_mutex_lock(&buffer->mutex);
+				if(buffer->currentSize == sliWindowsize) {
+					shouldWait = 1;
+				}
+				pthread_mutex_unlock(&buffer->mutex);
+				if(shouldWait !=0) {
+					int selectReturnValue =0;
+					while(1) {
+						fd_set rset;
+						int maxfd=0;
+						FD_ZERO(&rset);
+						FD_SET(sockfd, &rset);
+						maxfd= sockfd +1;
+						struct timeval timeToWait = getTimeToWait(buffer->tsThreadSlept,buffer->currentWaitmilliSecs );
+						if((selectReturnValue = select(maxfd, &rset, NULL, NULL,&timeToWait)) < 0) {
+							if(selectReturnValue == 0) {
+								shouldWait=0;
+								break;
+							}
+							else {
+								returnValue=sendMessage(sockfd,NULL,&replyHeader,NULL);
+								if(returnValue  < 0) {
+									perror("sending  Message Failed : \n");
+								}
+							}
+						}
+					}
+				}
+			//previousHeader = recvHeader;
+
+
 	}
 }
 

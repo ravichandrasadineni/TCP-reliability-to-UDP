@@ -5,6 +5,7 @@
 #include<string.h>
 #include "unp.h"
 #include "messageHeader.h"
+#include "threadUtility.h"
 int is_legal_int (char* );
 int getRandomSequenceNumber(int base);
 unsigned int malarm (unsigned int milliseconds);
@@ -14,5 +15,8 @@ int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,
 int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
 int  sendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
 int  recvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[512]);
-int  clientsendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488]);
+int  clientsendMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488],float randomSeed);
+int  clientrecvMessage(int sockfd, struct sockaddr_in* msg_name,  hdr* messageHeader ,  char data[488],float randomSeed);
+struct timeval getTimeToWait(struct timeval base, int currentWaitMilliSecs);
+void printfBuffer(sharedBuf *buffer);
 #endif

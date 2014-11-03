@@ -31,7 +31,7 @@ FLAGS = -g -O0
 
 CFLAGS = ${FLAGS} -I unpv13e/lib
 all: client server childServer
-OBJECTS=genericUtility.o portutility.o get_ifi_info_plus.o socketinfo.o fileUtility.o clientHandler.o serverHandler.o messageHeader.o childServerUtility.o bufferHandler.o fileSender.o urtt.o clientBufferHandler.o
+OBJECTS=genericUtility.o portutility.o get_ifi_info_plus.o socketinfo.o fileUtility.o clientHandler.o serverHandler.o messageHeader.o childServerUtility.o bufferHandler.o fileSender.o urtt.o clientBufferHandler.o threadUtility.o
 
 childServer : childServer.o $(OBJECTS)
 	${CC} ${FLAGS} -o childServer childServer.o $(OBJECTS) ${LIBS}
@@ -84,6 +84,9 @@ clientBufferHandler.o:libs/clientBufferHandler.c
 	
 fileSender.o: libs/fileSender.c
 	${CC} ${CFLAGS} -c libs/fileSender.c
+
+threadUtility.o: libs/threadUtility.c
+	${CC} ${CFLAGS} -c libs/threadUtility.c
 	
 urtt.o: libs/urtt.c
 	${CC} ${CFLAGS} -c libs/urtt.c
@@ -92,5 +95,5 @@ urtt.o: libs/urtt.c
 
 
 clean:
-	rm server client childServer $(OBJECTS)
+	rm server client childServer  $(OBJECTS)
 

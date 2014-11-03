@@ -6,6 +6,7 @@
 #include "messageHeader.h"
 #include "socketinfo.h"
 #include "genericUtility.h"
+#include "threadUtility.h"
 #include <setjmp.h>
-void handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename, sockinfo* clientSocketInfo);
+void handleServer(int sockfd, struct sockaddr_in ipAddress,int sliWindowsize, char* filename, sockinfo* clientSocketInfo, sharedBuf *buffer, float *probability);
 #endif

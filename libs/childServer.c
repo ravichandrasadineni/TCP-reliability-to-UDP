@@ -70,20 +70,21 @@ int establishSecondHandshake(clientInformation* currentClientInfo) {
 		}
 	}
 
-	do {
+//	do {
 		returnValue = recvMessage(newSockfd, NULL,&recvHeader,NULL);
-		printf("current ack Number is %d \n", ntohs(recvHeader.ack));
-	}while(returnValue < 0);
+
+//	}while(returnValue < 0);
 
 	if(returnValue <0) {
-		perror("failure while recieving first ACK Timed Out :");
+		perror("failure while receiving first ACK Timed Out :");
 		exit(2);
 	}
 
 	if(returnValue ==0) {
-		printf("failure while recieving first ACK : Timed Out /n");
+		printf("failure while receiving first ACK : Timed Out /n");
 		exit(2);
 	}
+	printf("Received packet with current ack Number is %d \n", ntohs(recvHeader.ack));
 	currentClientSeqNumber = ntohs(recvHeader.seq);
 	currentClientInformation.clientInitialWindowSize = ntohs(recvHeader.windowSize);
 	salarm(0);

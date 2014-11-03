@@ -5,7 +5,7 @@
 
 int isLoopbackAddr(struct sockaddr_in input)
 {
-	
+
 	struct sockaddr_in loopbackaddr;
 	inet_pton(AF_INET,"127.0.0.1",&loopbackaddr.sin_addr);
 	if(input.sin_addr.s_addr == loopbackaddr.sin_addr.s_addr){
@@ -32,7 +32,7 @@ int isLocal(sockinfo addr,struct sockaddr_in input)
 
 
 
-int sortNetworkMask(sockinfo* clientSocketInfo, int clientSocketInfoLength) {
+void sortNetworkMask(sockinfo* clientSocketInfo, int clientSocketInfoLength) {
 	int i=0;
 	int j=0;
 	uint32_t var1;
@@ -64,19 +64,19 @@ int getClientBindingSocket(struct sockaddr_in *ipAddress,int port,sockinfo* clie
 	char serveripAddressString[INET_ADDRSTRLEN];
 	struct ifi_info	*ifi, *ifihead;
 	socklen_t len=INET_ADDRSTRLEN;
-	
+
 
 	for (ifihead = ifi = Get_ifi_info_plus(addrFamily, doaliases); ifi != NULL; ifi = ifi->ifi_next) {
 		printf("%s: \n", ifi->ifi_name);
-			if ( (sa = (struct sockaddr_in *)ifi->ifi_addr) != NULL) {
-					printf("\tIP addr: %s\n",Sock_ntop_host((struct sockaddr *)sa, sizeof(*sa)));
-					clientSocketInfo->sockfd=0;
-					clientSocketInfo->ipAddr = sa->sin_addr;
-			}
-			if ( (sa = (struct sockaddr_in *)ifi->ifi_ntmaddr) != NULL) {
-				printf("\tnetwork mask: %s\n", Sock_ntop_host((struct sockaddr *)sa, sizeof(*sa)));
-				clientSocketInfo->subnetMask = sa->sin_addr;
-			}
+		if ( (sa = (struct sockaddr_in *)ifi->ifi_addr) != NULL) {
+			printf("\tIP addr: %s\n",Sock_ntop_host((struct sockaddr *)sa, sizeof(*sa)));
+			clientSocketInfo->sockfd=0;
+			clientSocketInfo->ipAddr = sa->sin_addr;
+		}
+		if ( (sa = (struct sockaddr_in *)ifi->ifi_ntmaddr) != NULL) {
+			printf("\tnetwork mask: %s\n", Sock_ntop_host((struct sockaddr *)sa, sizeof(*sa)));
+			clientSocketInfo->subnetMask = sa->sin_addr;
+		}
 		clientSocketInfo++;
 		noOfrecords++;
 	}	
@@ -165,8 +165,9 @@ int getClientBindingSocket(struct sockaddr_in *ipAddress,int port,sockinfo* clie
 	bzero(&sockaddr,sizeof(sockaddr));
 
 	cliaddr.sin_family=addrFamily;
-	cliaddr.sin_addr=cli->ipAddr;
+	cliaddr.sin_addr=((struct sockaddr_in *)ifihead->ifi_addr)->sin_addr;
 	cliaddr.sin_port=htons(0);
+	printf("After Binding, Selected Values:\nClient address is:%s and Ephemeral port assigned to client by Kernel is %d\n",inet_ntoa(cliaddr.sin_addr),(int)ntohs(cliaddr.sin_port));
 	Bind(sockfd,(SA*)&cliaddr,INET_ADDRSTRLEN);
 	getsockname(sockfd,(SA*)&sockaddr,&len);
 	printf("After Binding, Selected Values:\nClient address is:%s and Ephemeral port assigned to client by Kernel is %d\n",inet_ntoa(sockaddr.sin_addr),(int)ntohs(sockaddr.sin_port));
@@ -185,12 +186,11 @@ void connectAgain(int sockfd, int port) {
 	struct sockaddr_in peeraddr;
 	getpeername(sockfd,(SA*)&peeraddr,&len);
 	peeraddr.sin_port=htons(port);
+	printSocketDetails(peeraddr);
 	if(connect(sockfd, (SA*)&peeraddr,sizeof(peeraddr)) < 0) {
 		perror("unable to connect again to the new port ERROR :");
 		exit(1);
 	}
-	getsockname(sockfd,(SA*)&peeraddr,&len);
-	printSocketDetails(peeraddr);
 }
 
 
@@ -206,47 +206,46 @@ int getServerBindingSockets( int port, sockinfo* serverSocketsInfo)
 	int addrFamily=AF_INET;
 	int doaliases=1;
 	socklen_t len=INET_ADDRSTRLEN;
+	printf("Interfaces : \n");
 	for (ifihead = ifi = Get_ifi_info_plus(addrFamily, doaliases); ifi != NULL; ifi = ifi->ifi_next) {
-		if (!((ifi->ifi_flags & IFF_MULTICAST)||(ifi->ifi_flags & IFF_BROADCAST))) {
-			sockfd = socket(AF_INET, SOCK_DGRAM,0);
-			if(sockfd<0){
-				perror("Error while creating socket :");
-				exit(2);
-			}
-			Setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-			if ( (sa = (struct sockaddr_in *)ifi->ifi_addr) != NULL) {
-				sa->sin_family = addrFamily;
-				sa->sin_port = htons(port);
-				Bind(sockfd, (SA*)sa, sizeof(*sa));
-				getsockname(sockfd,(SA*)&sockaddr,&len);
-				printf("After Binding, Selected Values:\nClient address is:%s and Ephemeral port is %d\n",inet_ntoa(sockaddr.sin_addr),(int)ntohs(sockaddr.sin_port));
-				
-				serverSocketsInfo->sockfd = sockfd;
-				serverSocketsInfo->ipAddr = sa->sin_addr;
-				numOfSockets++;
-			}
-			if ( (sa = (struct sockaddr_in *)ifi->ifi_ntmaddr) != NULL) {
-				serverSocketsInfo->subnetMask = sa->sin_addr;
-			}
-			serverSocketsInfo->networkAddr.s_addr = serverSocketsInfo->ipAddr.s_addr & serverSocketsInfo->subnetMask.s_addr;
-			inet_ntop(AF_INET, &(serverSocketsInfo->ipAddr), ipAddressString, INET_ADDRSTRLEN);
-			inet_ntop(AF_INET, &(serverSocketsInfo->subnetMask), subnetMaskString, INET_ADDRSTRLEN);
-			inet_ntop(AF_INET, &(serverSocketsInfo->networkAddr), networkAddrString, INET_ADDRSTRLEN);
-			
-			printf("IP Address is : %s, Subnet Mask is : %s, Network Address is : %s   \n",ipAddressString,subnetMaskString, 			networkAddrString);
-			serverSocketsInfo++;
+		sockfd = socket(AF_INET, SOCK_DGRAM,0);
+		if(sockfd<0){
+			perror("Error while creating socket :");
+			exit(2);
 		}
+		Setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+		if ( (sa = (struct sockaddr_in *)ifi->ifi_addr) != NULL) {
+			sa->sin_family = addrFamily;
+			sa->sin_port = htons(port);
+			Bind(sockfd, (SA*)sa, sizeof(*sa));
+			serverSocketsInfo->sockfd = sockfd;
+			serverSocketsInfo->ipAddr = sa->sin_addr;
+			numOfSockets++;
+		}
+		if ( (sa = (struct sockaddr_in *)ifi->ifi_ntmaddr) != NULL) {
+			serverSocketsInfo->subnetMask = sa->sin_addr;
+		}
+		serverSocketsInfo->networkAddr.s_addr = serverSocketsInfo->ipAddr.s_addr & serverSocketsInfo->subnetMask.s_addr;
+		inet_ntop(AF_INET, &(serverSocketsInfo->ipAddr), ipAddressString, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &(serverSocketsInfo->subnetMask), subnetMaskString, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &(serverSocketsInfo->networkAddr), networkAddrString, INET_ADDRSTRLEN);
+		printf("IP Address is : %s, Subnet Mask is : %s, Network Address is : %s   \n",ipAddressString,subnetMaskString, networkAddrString);
+		serverSocketsInfo++;
+
 	}
+	printf("\n");
+	getsockname(sockfd,(SA*)&sockaddr,&len);
+	printf("After Binding: Server address is:%s and Ephemeral port is %d\n",inet_ntoa(sockaddr.sin_addr),(int)ntohs(sockaddr.sin_port));
 	free(ifihead);
 	return numOfSockets;
 }
 
 
 void printSocketDetails(struct sockaddr_in socketDetails) {
-		char clientAddressString[INET_ADDRSTRLEN];
-		inet_ntop(AF_INET,&(socketDetails.sin_addr),clientAddressString,INET_ADDRSTRLEN);
-		printf("the client address is %s \n", clientAddressString);
-		printf("the client port is %d\n", ntohs(socketDetails.sin_port));
+	char clientAddressString[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET,&(socketDetails.sin_addr),clientAddressString,INET_ADDRSTRLEN);
+	printf("the client address is %s \n", clientAddressString);
+	printf("the client port is %d\n", ntohs(socketDetails.sin_port));
 	return;
 }
 
@@ -289,10 +288,16 @@ int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInf
 			perror(" Setting Do Not Route Option Failed Error :");
 			exit(2);
 		}
+		if(!isLoopbackAddr(ClientSocketDetails)){
+			printf("Client is local to the server. Setting DONOTROUTE \n");
+		}
+		else {
+			printf("Client is on  loopback.setting DONOTROUTE. \n");
+		}
 
 
 	}
-	
+
 	if(bind(newSockfd, (SA*)&newServerSocket, INET_ADDRSTRLEN)<0) {
 		perror("\n bind  on new server socket failed ");
 		exit(2);
@@ -302,12 +307,12 @@ int getNewSocket(struct sockaddr_in	sockaddr, clientInformation currentClientInf
 }
 
 void connectNewServerSocket(int newSockfd, clientInformation currentClientInformation) {
-		struct sockaddr_in  ClientSocketDetails;
-		ClientSocketDetails = getClientSocketDetails(currentClientInformation);
-		if(connect(newSockfd, (SA*)&ClientSocketDetails,sizeof(ClientSocketDetails)) <0) {
-			perror("\n connect  call on new server socket failed");
-			exit(2);
-		}
+	struct sockaddr_in  ClientSocketDetails;
+	ClientSocketDetails = getClientSocketDetails(currentClientInformation);
+	if(connect(newSockfd, (SA*)&ClientSocketDetails,sizeof(ClientSocketDetails)) <0) {
+		perror("\n connect  call on new server socket failed");
+		exit(2);
+	}
 
 
 }
@@ -318,4 +323,4 @@ void connectNewServerSocket(int newSockfd, clientInformation currentClientInform
 
 
 
-	
+

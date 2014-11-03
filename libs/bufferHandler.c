@@ -17,19 +17,21 @@ void breakfiletoBuffers(char* filename){
 	fseek(fp,0L,SEEK_END);
 	size=ftell(fp);
 	rewind(fp);
-	if(size%488==0){
-		n=size/488;
+	printf("The size of the file in bytes is %d\n",size);
+	if(size%487==0){
+		n=size/487;
 	}
 	else{
-		n=size/488 + 1;
+		n=size/487 + 1;
 	}
 	segmentsInFile = n;
 	buffer = (char**)malloc(sizeof(char*)*(n));
 	for(i=0;i<n;i++){
 		buffer[i]=(char*)malloc(sizeof(char)*488);
+		memset(buffer[i],'\0',488);
 	}
 	for(i=0;i<n;i++){
-		fread(buffer[i],488,1,fp);
+		fread(buffer[i],487,1,fp);
 	}
 
 
@@ -39,7 +41,7 @@ void breakfiletoBuffers(char* filename){
 void createInitialServerBuffer(int windowSegmentSize, serverWindowSeg** head, serverWindowSeg** tail, int* currentServerSequenceNumber) {
 	// Intializing the random sequence number
 	if(windowSegmentSize ==0) {
-		printf("0 segement size , can't send packets'");
+		printf("0 segment size , can't send packets");
 		exit(2);
 	}
 
@@ -83,7 +85,6 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 		free(headPointer);
 		headPointer = currentHead;
 	}
-
 	for( i=0; i < numOfAck; i++) {
 		currentTail = tailPointer;
 		tailPointer =(serverWindowSeg*)malloc(sizeof(serverWindowSeg));
@@ -93,8 +94,7 @@ void handleAck(int numOfAck, serverWindowSeg** head, serverWindowSeg** tail, int
 		*currentServerSequenceNumber = *currentServerSequenceNumber +1;
 		buildHeaderAndData(&(tailPointer->header),&(tailPointer->data),(*currentServerSequenceNumber) );
 		currentTail->next= tailPointer;
-		printf("The number of segments in file is %d\n",segmentsInFile);
-
+		//printf("The number of segments in file is %d\n",segmentsInFile);
 	}
 	*head = headPointer;
 	*tail = tailPointer;
@@ -108,7 +108,6 @@ void buildHeaderAndData(hdr* messageHeader, char** data, int currentServerSequen
 
 	printf("currentReadingPosition is %d \n", currentReadingPosition);
 	if(currentReadingPosition >= segmentsInFile) {
-			printf("is a Fin Packet \n");
 			(*messageHeader) = build_header(currentServerSequenceNumber, 0,0, 1,0,0);
 			(*data) = NULL;
 	}

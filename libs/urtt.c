@@ -20,7 +20,6 @@ void urtt_init( urtt_info *ptr)
 {
 	struct timeval	tv;
 	Gettimeofday(&tv, NULL);
-
 	ptr->rtt_base = tv.tv_sec;		/* # sec since 1/1/1970 at start */
 	ptr->rtt_rtt    = 0;
 	ptr->rtt_srtt   = 0;

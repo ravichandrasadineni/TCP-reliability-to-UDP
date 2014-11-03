@@ -1,52 +1,54 @@
 #include "clientBufferHandler.h"
 
 
-clientWindowSeg *head = NULL, *tail=NULL;
 clientWindowSeg* createWindowSeg() {
 
 	clientWindowSeg*  currentSegment = (clientWindowSeg*)malloc(sizeof(clientWindowSeg));
 	currentSegment->isReceived=0;
 	currentSegment->header=build_header(0,0,0,0,0,0);
-	currentSegment->data=NULL;
+	memset(currentSegment->data,0,488);
 	currentSegment->serverSeqNo=0;
 	currentSegment->next=NULL;
 	return currentSegment;
 }
 
-void fillInTheMiddle(hdr recvHeader, char* Message, int diff) {
+void fillInTheMiddle(hdr recvHeader, char* Message, int diff, sharedBuf *buffer) {
 	//printf("diff is %d \n", diff);
 	clientWindowSeg * currentPosition;
-	currentPosition = head;
+	currentPosition = buffer->head ;
 	int i;
 	for(i=0; i<diff;i++) {
 		currentPosition = currentPosition->next;
 	}
-	currentPosition->data=Message;
+	strncpy(currentPosition->data,Message,488)	;
 	currentPosition->header= recvHeader;
 	currentPosition->serverSeqNo = ntohs(recvHeader.seq);
 	currentPosition->isReceived = 1;
 }
 
-void extendWindow(hdr recvHeader, char* Message) {
+void extendWindow(hdr recvHeader, char* Message, sharedBuf *buffer) {
 	int currentSeqNo = ntohs(recvHeader.seq);
 
-	int diff = currentSeqNo-(tail->serverSeqNo);
+	int diff = currentSeqNo-(buffer->tail->serverSeqNo);
+	int tailSeqNo = (buffer->tail->serverSeqNo);
 
 	int i;
 	for (i=0; i<diff;i++) {
-		tail->next = createWindowSeg();
-		tail = tail->next;
+		buffer->tail->next = createWindowSeg();
+		buffer->tail = buffer->tail->next;
+		buffer->tail->serverSeqNo = tailSeqNo+i+1;
+
 	}
-	tail->data = Message;
-	tail->header = recvHeader;
-	tail->isReceived = 1;
-	tail->serverSeqNo = ntohs(recvHeader.seq);
+	strncpy(buffer->tail->data,Message,488);
+	buffer->tail->header = recvHeader;
+	buffer->tail->isReceived = 1;
+	buffer->tail->serverSeqNo = ntohs(recvHeader.seq);
 }
 
-int findWindowSize(int slidingWindowSize){
+int findWindowSize(int slidingWindowSize, sharedBuf *buffer){
 	clientWindowSeg *currentSeg;
 	int size = slidingWindowSize,i;
-	currentSeg = head;
+	currentSeg = buffer->head ;
 	for(i=1;i<=slidingWindowSize;i++){
 		if((currentSeg != NULL )&&(currentSeg->isReceived == 1)){
 			size--;
@@ -59,10 +61,10 @@ int findWindowSize(int slidingWindowSize){
 	return size;
 }
 
-int findACK(int slidingWindowSize){
-	int ack=head->serverSeqNo,i;
+int findACK(int slidingWindowSize, sharedBuf *buffer){
+	int ack=buffer->head ->serverSeqNo,i;
 	clientWindowSeg *currentSeg;
-	currentSeg = head;
+	currentSeg = buffer->head ;
 	for(i=0;i<slidingWindowSize;i++){
 		if((currentSeg != NULL )&&(currentSeg->isReceived == 1)){
 			ack++;
@@ -75,32 +77,49 @@ int findACK(int slidingWindowSize){
 	return ack;
 }
 
-hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader){
-	printf("%s",Message);
+hdr populateClientBuffer(int previousAckNo,int slidingWindowSize,char *Message,hdr recvHeader, sharedBuf *buffer){
+
+	printf("previous ack No is %d \n", previousAckNo);
 	hdr replyHeader;
 	int diff,i,currentWindowSize,currentServerSeqNo,ack;
 	currentServerSeqNo = ntohs(recvHeader.seq);
 	//printf("\nThe current Server sequence number is %d\n",ntohs(recvHeader.seq));
-	if(head == NULL) {
-		head =createWindowSeg();
-		tail = head;
-		head->serverSeqNo = previousAckNo;
+	pthread_mutex_lock(&buffer->mutex);
+	if(buffer->head == NULL) {
+		buffer->head  =createWindowSeg();
+		buffer->tail = buffer->head ;
+		buffer->head ->serverSeqNo = previousAckNo;
 	}
-	diff = currentServerSeqNo-head->serverSeqNo;
+	printf("head ->serverSeqNo is %d \n",buffer->head->serverSeqNo);
+	if(buffer->head->serverSeqNo > currentServerSeqNo) {
+		printf("Entered the condition \n");
+		replyHeader = build_header(0,buffer->head->serverSeqNo,0,0,currentWindowSize,0);
+		pthread_mutex_unlock(&buffer->mutex);
+		return replyHeader;
+	}
+	diff = currentServerSeqNo-buffer->head ->serverSeqNo;
+	printf("current diff is %d \n", diff);
 	if(diff > slidingWindowSize) {
 		printf("diff and SlidingWindowSizes are %d %d \n",diff, slidingWindowSize);
 		printf("Sever is Malfunctioning, sent packets more than the window size \n");
 		exit(3);
 	}
-	currentWindowSize = tail->serverSeqNo - head->serverSeqNo;
+	currentWindowSize = buffer->tail->serverSeqNo - buffer->head ->serverSeqNo;
 	if(diff<currentWindowSize ) {
-		fillInTheMiddle(recvHeader, Message, diff);
+		printf("Filling in the middle \n");
+		fillInTheMiddle(recvHeader, Message, diff, buffer);
 	}
 	else {
-		extendWindow(recvHeader, Message);
+		printf("Extending Window \n");
+		extendWindow(recvHeader, Message, buffer);
 	}
-	currentWindowSize = findWindowSize(slidingWindowSize);
-	ack = findACK(slidingWindowSize);
+
+	currentWindowSize = findWindowSize(slidingWindowSize, buffer);
+	ack = findACK(slidingWindowSize, buffer);
 	replyHeader = build_header(0,ack,0,0,currentWindowSize,0);
+	buffer->currentSize = slidingWindowSize-currentWindowSize;
+	printf("exited populateClientBuffer %d\n",buffer->currentSize);
+	pthread_mutex_unlock(&buffer->mutex);
+
 	return replyHeader;
 }

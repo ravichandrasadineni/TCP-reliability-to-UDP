@@ -3,7 +3,7 @@ int clientsInfoLength = 0;
 clientInfo clientsInformation[100];
 
 void populateInputParams(sockinfo currentSocketInfo, struct sockaddr_in *cliAddr, hdr* header, char* filename, int sliWindowSize, char* argv[9]);
-void handleClient(sockinfo* serverSocketsInfo,int size, SA clientAddress, sockinfo currentServerInfo, char* recvbuffer );
+
 
 int isDuplicateClient(struct sockaddr_in cliAddr) {
 	int i;
@@ -95,7 +95,6 @@ void handleClients(sockinfo* serverSocketsInfo, int size, int sliWindowSize) {
        	for(j=0; j<size; j++) {
        		if(FD_ISSET(serverSocketsInfo[j].sockfd,&rset)) {
        			recvCount=recvMessage(serverSocketsInfo[j].sockfd,&clientAddress,&header,filename);
-       			printf("recv count is  and j is %d  %d\n",recvCount,j);
        			if(recvCount < 0) {
        				perror("recvMsg in the parent process failed :");
        				exit(2);
@@ -162,7 +161,10 @@ void populateInputParams(sockinfo currentSocketInfo, struct sockaddr_in *cliAddr
 /*	printf("the value in argv[6] is %s \n",argv[6]);	*/
 	
 	argv[7]=(char *)malloc(INET_ADDRSTRLEN);
-	if(inet_ntop(AF_INET,&(currentSocketInfo.subnetMask),argv[7],INET_ADDRSTRLEN)<=0);
+	if(inet_ntop(AF_INET,&(currentSocketInfo.subnetMask),argv[7],INET_ADDRSTRLEN)<=0){
+		printf("Subnet Mask address inet_ntop conversion failed\n");
+		exit(0);
+	}
 }
 
 	

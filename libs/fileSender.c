@@ -19,12 +19,14 @@ int CWIN=1,SSThreshold=0,numOfACKSReceived=0;
 sigjmp_buf jmpBuf;
 
 static void sig_alarm(int signo) {
+	printf("sig set jump called \n");
 	siglongjmp(jmpBuf, 1);
 }
 
 
 int computeCWINandSSThreshold(int scenario,int serverWindowSize,int clientWindowSize,int numberofACKs){
 	printf("Server Window size is %d and client window size is %d\n",serverWindowSize,clientWindowSize);
+	printf("Number of Acks Recieved  %d and numberofACKsis %d and CWIN is %d\n",numOfACKSReceived,numberofACKs, CWIN);
 	numOfACKSReceived += numberofACKs;
 	if(SSThreshold == 0){
 		if(scenario==0){//for Normal ACK
@@ -62,10 +64,10 @@ int computeCWINandSSThreshold(int scenario,int serverWindowSize,int clientWindow
 					CWIN ++;
 					numOfACKSReceived = 0;
 				}
-				else{
-					printf("The number of ACK's received is greater than CWIN.....Debug\n");
-					exit(0);
-				}
+				//				else if (numOfACKSReceived > CWIN){
+				//					printf("The number of ACK's received is greater than CWIN.....Debug\n");
+				//					exit(0);
+				//				}
 			}
 		}
 		else if (scenario  == 1) {
@@ -96,17 +98,17 @@ int computeCWINandSSThreshold(int scenario,int serverWindowSize,int clientWindow
 	int currentMinimum = getMinimum(serverWindowSize,clientWindowSize, CWIN );
 	if(scenario == 0 && SSThreshold == 0)
 		printf("Doubling mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
-	else if(scenario == 0 && SSThreshold == 1)
+	else if(scenario == 0 && SSThreshold > 1)
 		printf("Doubling mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
 
 	else if(scenario == 1 && SSThreshold == 0)
 		printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
-	else if(scenario == 1 && SSThreshold == 1)
+	else if(scenario == 1 && SSThreshold > 1)
 		printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
 
 	if(scenario == 2 && SSThreshold == 0)
 		printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is NOT SET\n",currentMinimum,CWIN);
-	else if (scenario == 2 && SSThreshold == 1)
+	else if (scenario == 2 && SSThreshold > 1)
 		printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
 	return currentMinimum;
 }
@@ -132,7 +134,9 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 	serverWindowSeg *head = NULL, *tail = NULL;
 	createInitialServerBuffer(serverWindowSize,&head,&tail, &currentServerSequenceNumber);
 	signal(SIGALRM, sig_alarm);
+
 	while(notDoneSending) {
+		printf("before  while and currentMinimum is %d \n",currentMinimum);
 		serverWindowSeg* current = head;
 		if(malarm(urtt_start(&urttInfo,0)) > 0 ) {
 			printf("Timer on a Existing Timer \n");
@@ -141,7 +145,9 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 		currentWaitingAckNumber = ntohs(current->header.seq)+1;
 		while((currentMinimum  > 0) &&(current!= NULL )) {
 			if(current->isSent) {
+				printf("Sequence is %d \n", ntohs(current->header.seq));
 				currentMinimum--;
+				current = current->next;
 				continue;
 			}
 			else {
@@ -157,11 +163,11 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 			current = current->next;
 		}
 		do {
-			//printf("Before recv message \n");
 			if(sigsetjmp(jmpBuf,1)!=0) {
+				//printf("sig long jump called \n");
 				head->numOfAcks =0;
 				currentMinimum=computeCWINandSSThreshold(2,serverWindowSize,clientWindowSize,0);
-				//printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
+				printf("Timeout mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
 				sendMessage(sockfd,NULL,&(head->header),head->data);
 				if((urtt_timeout(&urttInfo,&(head->numOfRtsm)) > 0)) {
 					printf("Tried 12 times reaching ipAddress for the following client Giving Up \n");
@@ -170,24 +176,29 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 				}
 				malarm(urtt_start(&urttInfo,head->numOfRtsm));
 			}
+			printf("recv message called \n");
 			recvMessage(sockfd,NULL, &currentClientHeader, NULL);
+			printf("The current acknowledgment is %d received \n", ntohs(currentClientHeader.ack));
 			if(ntohs(currentClientHeader.ack) == currentWaitingAckNumber-1) {
-				printf("Duplicate ACK \n");
+				printf("Duplicate ACK  \n");
 				head->numOfAcks += 1;
 				if(head->numOfAcks >=2) {
+					printf("Duplicate acks are greater than 2 \n");
 					malarm(0);
 					head->numOfAcks =0;
 					sendMessage(sockfd,NULL,&(head->header),head->data);
 					head->numOfRtsm += 1;
 					currentMinimum=computeCWINandSSThreshold(1,serverWindowSize,ntohs(currentClientHeader.windowSize),3);
-					//printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
+					printf("Fast Retransmit mode : currentMiminimum is %d CWIN is %d and SSThreshold is %d\n",currentMinimum,CWIN,SSThreshold);
 					malarm(urtt_start(&urttInfo,head->numOfRtsm));
+				}
+				else {
+					malarm(2000);
 				}
 			}
 			else if(ntohs(currentClientHeader.ack)  >= currentWaitingAckNumber){
 				printf("Number of ACKs received is %d\n",ntohs(currentClientHeader.ack)-currentWaitingAckNumber+1);
 				currentMinimum=computeCWINandSSThreshold(0,serverWindowSize,ntohs(currentClientHeader.windowSize),ntohs(currentClientHeader.ack)-currentWaitingAckNumber+1);
-
 				malarm(0);
 				unsigned int currentTime = urtt_ts(&urttInfo);
 				urtt_stop(&urttInfo,currentTime-head->ts,head->numOfRtsm);
@@ -197,27 +208,36 @@ void sendFileAndCloseConnection(int sockfd,  clientInformation currentClientInfo
 						printf("Client has  Locked its window. No point Probing More than 12 times. Giving Up \n");
 						exit(0);
 					}
+					if((!notDoneSending) &&(ntohs(head->header.finFlag)==1)) {
+						printf("head seq No is %d",ntohs(head->header.seq));
+						printf("before calling exit \n");
+						exit(0);
+					}
 					isZeroWindowSize = 1;
 					printf("Client window size is  0 \n");
 					malarm(2000);
+					sleep(2);
 					continue;
 				}
 				else {
 					isZeroWindowSize  = 0;
 					numOfProbesSent = 0;
 					int numOfAcks = ntohs(currentClientHeader.ack)-currentWaitingAckNumber+1;
-
 					handleAck(numOfAcks,&head, &tail,&currentServerSequenceNumber);
 					currentWaitingAckNumber = ntohs(head->header.seq)+1;
 					printf("currentWaitingAckNumber is %d\n",currentWaitingAckNumber);
 				}
+
 				if((!notDoneSending) &&(ntohs(head->header.finFlag)!=1)) {
+					printf("head seq No is %d",ntohs(head->header.seq));
 					printf("before calling continue \n");
 					continue;
 				}
+
 				printf("Before Break \n");
 				break;
 			}
+			printf("head seq No is %d",ntohs(head->header.seq));
 		}while(1);
 
 	}

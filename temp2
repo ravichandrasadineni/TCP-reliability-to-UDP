@@ -1,0 +1,906 @@
+new SockFd is 5 
+the client address is 127.0.0.1 
+the client port is 55779
+The return Value is 9383 
+the client address is 127.0.0.1 
+the client port is 55779
+before send message 
+After send message 
+before send message 
+After send message 
+
+ before recv message 
+
+ after recv message 
+Received packet with current ack Number is 9384 
+the client address is 127.0.0.1 
+the client port is 55779
+The size of the file in bytes is 19028
+The min max functioned returned 3000
+The min max functioned returned 3000
+currentReadingPosition is 0 
+currentReadingPosition is 1 
+currentReadingPosition is 2 
+currentReadingPosition is 3 
+currentReadingPosition is 4 
+currentReadingPosition is 5 
+currentReadingPosition is 6 
+currentReadingPosition is 7 
+currentReadingPosition is 8 
+currentReadingPosition is 9 
+currentReadingPosition is 10 
+currentReadingPosition is 11 
+currentReadingPosition is 12 
+currentReadingPosition is 13 
+currentReadingPosition is 14 
+currentReadingPosition is 15 
+currentReadingPosition is 16 
+currentReadingPosition is 17 
+currentReadingPosition is 18 
+currentReadingPosition is 19 
+currentReadingPosition is 20 
+currentReadingPosition is 21 
+currentReadingPosition is 22 
+currentReadingPosition is 23 
+currentReadingPosition is 24 
+currentReadingPosition is 25 
+currentReadingPosition is 26 
+currentReadingPosition is 27 
+currentReadingPosition is 28 
+currentReadingPosition is 29 
+currentReadingPosition is 30 
+currentReadingPosition is 31 
+currentReadingPosition is 32 
+currentReadingPosition is 33 
+currentReadingPosition is 34 
+currentReadingPosition is 35 
+currentReadingPosition is 36 
+currentReadingPosition is 37 
+currentReadingPosition is 38 
+currentReadingPosition is 39 
+The head Pointer is pointing to 9384 
+The tail Pointer is pointing to 9423 
+before  while and currentMinimum is 1 
+The urtt_start info for 0 time transmission is 3000
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9385 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 39
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 1
+Doubling mode : currentMiminimum is 2 CWIN is 2 and SSThreshold is NOT SET
+The min max functioned returned 2250
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9385 
+The tail Pointer is pointing to 9424 
+currentWaitingAckNumber is 9386
+Before Break 
+before  while and currentMinimum is 2 
+The urtt_start info for 0 time transmission is 2250
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9386 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 38
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 2
+Doubling mode : currentMiminimum is 3 CWIN is 3 and SSThreshold is NOT SET
+The min max functioned returned 1688
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9386 
+The tail Pointer is pointing to 9425 
+currentWaitingAckNumber is 9387
+Before Break 
+before  while and currentMinimum is 3 
+The urtt_start info for 0 time transmission is 1688
+Sequence is 9386 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9387 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 37
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 3
+Doubling mode : currentMiminimum is 4 CWIN is 4 and SSThreshold is NOT SET
+The min max functioned returned 1266
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9387 
+The tail Pointer is pointing to 9426 
+currentWaitingAckNumber is 9388
+Before Break 
+before  while and currentMinimum is 4 
+The urtt_start info for 0 time transmission is 1266
+Sequence is 9387 
+Sequence is 9388 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9388 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 36
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 4
+Doubling mode : currentMiminimum is 5 CWIN is 5 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9388 
+The tail Pointer is pointing to 9427 
+currentWaitingAckNumber is 9389
+Before Break 
+before  while and currentMinimum is 5 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9388 
+Sequence is 9389 
+Sequence is 9390 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9389 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 35
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 5
+Doubling mode : currentMiminimum is 6 CWIN is 6 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9389 
+The tail Pointer is pointing to 9428 
+currentWaitingAckNumber is 9390
+Before Break 
+before  while and currentMinimum is 6 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9389 
+Sequence is 9390 
+Sequence is 9391 
+Sequence is 9392 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9390 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 34
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 6
+Doubling mode : currentMiminimum is 7 CWIN is 7 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9390 
+The tail Pointer is pointing to 9429 
+currentWaitingAckNumber is 9391
+Before Break 
+before  while and currentMinimum is 7 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9390 
+Sequence is 9391 
+Sequence is 9392 
+Sequence is 9393 
+Sequence is 9394 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9391 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 33
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 7
+Doubling mode : currentMiminimum is 8 CWIN is 8 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9391 
+The tail Pointer is pointing to 9430 
+currentWaitingAckNumber is 9392
+Before Break 
+before  while and currentMinimum is 8 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9391 
+Sequence is 9392 
+Sequence is 9393 
+Sequence is 9394 
+Sequence is 9395 
+Sequence is 9396 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9392 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 32
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 8
+Doubling mode : currentMiminimum is 9 CWIN is 9 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9392 
+The tail Pointer is pointing to 9431 
+currentWaitingAckNumber is 9393
+Before Break 
+before  while and currentMinimum is 9 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9392 
+Sequence is 9393 
+Sequence is 9394 
+Sequence is 9395 
+Sequence is 9396 
+Sequence is 9397 
+Sequence is 9398 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9393 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 31
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 9
+Doubling mode : currentMiminimum is 10 CWIN is 10 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9393 
+The tail Pointer is pointing to 9432 
+currentWaitingAckNumber is 9394
+Before Break 
+before  while and currentMinimum is 10 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9393 
+Sequence is 9394 
+Sequence is 9395 
+Sequence is 9396 
+Sequence is 9397 
+Sequence is 9398 
+Sequence is 9399 
+Sequence is 9400 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9394 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 30
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 10
+Doubling mode : currentMiminimum is 11 CWIN is 11 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9394 
+The tail Pointer is pointing to 9433 
+currentWaitingAckNumber is 9395
+Before Break 
+before  while and currentMinimum is 11 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9394 
+Sequence is 9395 
+Sequence is 9396 
+Sequence is 9397 
+Sequence is 9398 
+Sequence is 9399 
+Sequence is 9400 
+Sequence is 9401 
+Sequence is 9402 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9396 received 
+Number of ACKs received is 2
+Server Window size is 40 and client window size is 28
+Number of Acks Recieved  0 and numberofACKsis 2 and CWIN is 11
+Doubling mode : currentMiminimum is 13 CWIN is 13 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 2 
+currentReadingPosition is 40 
+is a Fin Packet 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9396 
+The tail Pointer is pointing to 9435 
+currentWaitingAckNumber is 9397
+Before Break 
+before  while and currentMinimum is 13 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9396 
+Sequence is 9397 
+Sequence is 9398 
+Sequence is 9399 
+Sequence is 9400 
+Sequence is 9401 
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+before send message 
+After send message 
+before send message 
+After send message 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9398 received 
+Number of ACKs received is 2
+Server Window size is 40 and client window size is 26
+Number of Acks Recieved  0 and numberofACKsis 2 and CWIN is 13
+Doubling mode : currentMiminimum is 15 CWIN is 15 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 2 
+currentReadingPosition is 40 
+is a Fin Packet 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9398 
+The tail Pointer is pointing to 9437 
+currentWaitingAckNumber is 9399
+Before Break 
+before  while and currentMinimum is 15 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9398 
+Sequence is 9399 
+Sequence is 9400 
+Sequence is 9401 
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+before send message 
+After send message 
+before send message 
+After send message 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9399 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 25
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 15
+Doubling mode : currentMiminimum is 16 CWIN is 16 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9399 
+The tail Pointer is pointing to 9438 
+currentWaitingAckNumber is 9400
+Before Break 
+before  while and currentMinimum is 16 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9399 
+Sequence is 9400 
+Sequence is 9401 
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9400 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 24
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 16
+Doubling mode : currentMiminimum is 17 CWIN is 17 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9400 
+The tail Pointer is pointing to 9439 
+currentWaitingAckNumber is 9401
+Before Break 
+before  while and currentMinimum is 17 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9400 
+Sequence is 9401 
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9401 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 23
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 17
+Doubling mode : currentMiminimum is 18 CWIN is 18 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9401 
+The tail Pointer is pointing to 9440 
+currentWaitingAckNumber is 9402
+Before Break 
+before  while and currentMinimum is 18 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9401 
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9402 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 22
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 18
+Doubling mode : currentMiminimum is 19 CWIN is 19 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9402 
+The tail Pointer is pointing to 9441 
+currentWaitingAckNumber is 9403
+Before Break 
+before  while and currentMinimum is 19 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9402 
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+Sequence is 9417 
+Sequence is 9418 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9403 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 21
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 19
+Doubling mode : currentMiminimum is 20 CWIN is 20 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9403 
+The tail Pointer is pointing to 9442 
+currentWaitingAckNumber is 9404
+Before Break 
+before  while and currentMinimum is 20 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9403 
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+Sequence is 9417 
+Sequence is 9418 
+Sequence is 9419 
+Sequence is 9420 
+before send message 
+After send message 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9404 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 20
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 20
+Doubling mode : currentMiminimum is 20 CWIN is 21 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9404 
+The tail Pointer is pointing to 9443 
+currentWaitingAckNumber is 9405
+Before Break 
+before  while and currentMinimum is 20 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9404 
+Sequence is 9405 
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+Sequence is 9417 
+Sequence is 9418 
+Sequence is 9419 
+Sequence is 9420 
+Sequence is 9421 
+Sequence is 9422 
+before send message 
+After send message 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9406 received 
+Number of ACKs received is 2
+Server Window size is 40 and client window size is 18
+Number of Acks Recieved  0 and numberofACKsis 2 and CWIN is 21
+Doubling mode : currentMiminimum is 18 CWIN is 23 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 2 
+currentReadingPosition is 40 
+is a Fin Packet 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9406 
+The tail Pointer is pointing to 9445 
+currentWaitingAckNumber is 9407
+Before Break 
+before  while and currentMinimum is 18 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9406 
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+Sequence is 9417 
+Sequence is 9418 
+Sequence is 9419 
+Sequence is 9420 
+Sequence is 9421 
+Sequence is 9422 
+Sequence is 9423 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Number of ACKs received is 1
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 1 and CWIN is 23
+Doubling mode : currentMiminimum is 17 CWIN is 24 and SSThreshold is NOT SET
+The min max functioned returned 1000
+Num of Acks is 1 
+currentReadingPosition is 40 
+is a Fin Packet 
+The head Pointer is pointing to 9407 
+The tail Pointer is pointing to 9446 
+currentWaitingAckNumber is 9408
+Before Break 
+before  while and currentMinimum is 17 
+The urtt_start info for 0 time transmission is 1000
+Sequence is 9407 
+Sequence is 9408 
+Sequence is 9409 
+Sequence is 9410 
+Sequence is 9411 
+Sequence is 9412 
+Sequence is 9413 
+Sequence is 9414 
+Sequence is 9415 
+Sequence is 9416 
+Sequence is 9417 
+Sequence is 9418 
+Sequence is 9419 
+Sequence is 9420 
+Sequence is 9421 
+Sequence is 9422 
+Sequence is 9423 
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 24
+Fast Retransmit mode : currentMiminimum is 12 CWIN is 12 and SSThreshold is 12
+Fast Retransmit mode : currentMiminimum is 12 CWIN is 12 and SSThreshold is 12
+The urtt_start info for 1 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 12
+Fast Retransmit mode : currentMiminimum is 6 CWIN is 6 and SSThreshold is 6
+Fast Retransmit mode : currentMiminimum is 6 CWIN is 6 and SSThreshold is 6
+The urtt_start info for 2 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 6
+Fast Retransmit mode : currentMiminimum is 3 CWIN is 3 and SSThreshold is 3
+Fast Retransmit mode : currentMiminimum is 3 CWIN is 3 and SSThreshold is 3
+The urtt_start info for 3 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 3
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+The urtt_start info for 4 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 1
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+The urtt_start info for 5 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9407 received 
+Duplicate ACK  
+Duplicate acks are greater than 2 
+before send message 
+After send message 
+Server Window size is 40 and client window size is 17
+Number of Acks Recieved  0 and numberofACKsis 3 and CWIN is 1
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+Fast Retransmit mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+The urtt_start info for 6 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
+The current acknowledgment is 9424 received 
+Number of ACKs received is 17
+Server Window size is 40 and client window size is 0
+Number of Acks Recieved  0 and numberofACKsis 17 and CWIN is 1
+Doubling mode : currentMiminimum is 0 CWIN is 2 and SSThreshold is 2
+Client window size is  0 
+sig set jump called 
+Server Window size is 40 and client window size is 40
+Number of Acks Recieved  0 and numberofACKsis 0 and CWIN is 2
+Timeout mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+Timeout mode : currentMiminimum is 1 CWIN is 1 and SSThreshold is 2
+before send message 
+After send message 
+The min max functioned returned 2000
+The urtt_start info for 7 time transmission is 1000
+recv message called 
+
+ before recv message 
+
+ after recv message 
